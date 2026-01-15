@@ -10,7 +10,7 @@ title: Classificazione delle Architetture
 	- [2.2. Macchine SIMD](#22-macchine-simd)
 	- [2.3. Macchine MISD](#23-macchine-misd)
 	- [2.4. Macchine MIMD](#24-macchine-mimd)
-		- [2.4.1. Macchine a Memoria Ditribuita DM-MIMD](#241-macchine-a-memoria-ditribuita-dm-mimd)
+		- [2.4.1. Macchine a Memoria Distribuita DM-MIMD](#241-macchine-a-memoria-distribuita-dm-mimd)
 		- [2.4.2. Macchine a Memoria Condivisa SM-MIMD](#242-macchine-a-memoria-condivisa-sm-mimd)
 	- [2.5. Confronto SIMD e MIMD](#25-confronto-simd-e-mimd)
 - [3. Tipologie di interconnessione](#3-tipologie-di-interconnessione)
@@ -32,16 +32,16 @@ title: Classificazione delle Architetture
 
 # 2. Tassonomia di Flynn
 
-È un metodo di cclassificazione di sistemi di elaborazione da due punti di vista:
-- In base alla capacità di avere più flussi di istruzioni
-- In base alla capacità di avere più flussi di dati
+È un metodo di classificazione dei sistemi di elaborazione, che utilizza due punti di vista:
+- La capacità del sistema di avere **più flussi di istruzioni**
+- La capacità del sistema di avere **più flussi di dati**
 
 <div class="flexbox" markdown="1">
 
-|                                              | `SI` <br> (_Single Intruction stream_) | `MI` <br> (_Multiple Instruction stream_) |
-| :------------------------------------------: | :------------------------------------: | :---------------------------------------: |
-|  _**`SD`**_ <br> **(_Single Data stream_)**  |            Macchine `SISD`             |              Macchine `MISD`              |
-| _**`MD`**_ <br> **(_Multiple Data stream_)** |            Macchine `SIMD`             |              Macchine `MIMD`              |
+|                                              | `SI` <br> (_Single Instruction stream_) | `MI` <br> (_Multiple Instruction stream_) |
+| :------------------------------------------: | :-------------------------------------: | :---------------------------------------: |
+|  _**`SD`**_ <br> **(_Single Data stream_)**  |             Macchine `SISD`             |              Macchine `MISD`              |
+| _**`MD`**_ <br> **(_Multiple Data stream_)** |             Macchine `SIMD`             |              Macchine `MIMD`              |
 
 
 </div>
@@ -79,7 +79,8 @@ La topologia di interconnessione tra i vari processori può essere sia _regolare
 Questa architettura permette comunicazioni regolari efficienti e poco costose, che non creano conflitti.
 
 Il modello di computazione di queste macchine è **_Sincrono_**, ovvero gestito da un unica unità di controllo.
-Questo permette due tipi di parallelismo:
+
+Questo permette due tipi di parallelismi:
 - **Temporale** fasi diverse di un'unica istruzione sono eseguite in parallelo in differenti moduli connessi in cascata (_pipeline_)
 - **Spaziale**: i medesimi passi sono eseguiti contemporaneamente su un arry di processori perfettamente uguali sincronizzaiti da un solo controllore
 
@@ -100,16 +101,16 @@ Queste macchine hanno più flussi di istruzioni che lavorano contemporaneamente 
 
 Molti considerano questa categoria ancora "vuota", ovvero senza esempi reali. Altri invece categorizzano i processori basati su _pipeline_ proprio come macchine `MISD`.
 
-Per ulteriori informazioni sui processori moderni basati su pipeline consultare [gli appunti di Calcolatori dedicati](https://gabriele-d-cambria.github.io/Appunti-Calcolatori-Elettronici-2024-2025/Architettura%20Moderna%20CPU%20Intel#2-pipeline)
+Per ulteriori informazioni sui processori moderni basati su pipeline consultare [gli appunti di Calcolatori dedicati](https://gabriele-d-cambria.github.io/Appunti-Calcolatori-Elettronici-2024-2025/Architettura%20Moderna%20CPU%20Intel#2-pipeline).
 
 ## 2.4. Macchine MIMD
 
 In queste macchine abbiamo **tante unità di elaborazione** connesse a tante **untià di dati**. Abbiamo infatto più flussi di istruzioni in parallelo che elaborano insiemi di dati che possono essere _distinti_, _privati_ o _condivisi_.
 
 
-Vediamo due categorie di macchien `MIMD`
+Vediamo due categorie di macchine `MIMD`
 
-### 2.4.1. Macchine a Memoria Ditribuita DM-MIMD
+### 2.4.1. Macchine a Memoria Distribuita DM-MIMD
 
 <figure class="">
 <img class="100" src="./images/Classificazione Architetture/MD-MIMD.png">
@@ -124,8 +125,10 @@ Ogni coppia `IP`-`DP` (con le relative memoria) costituisce in pratica **una mac
 Una qualsiasi **_rete di calcolatori_** rappresenta una macchina `DM-MIMD`. Infatti queste reti di interconnessione regolari permettono ai nodi di scambiare informazioni secondo il paradigma _message passing_. Queste reti permettono _algoritmi ad elevata località_ e un _elevata scalabilità_.
 
 Nelle `DM-MIMD` troviamo due sottocategorie:
-- `DM-MIMD MPP` (_Massively Parallel Processing_): L'elaborazione `MMP` è utilizzata in applicazioni scientifiche e in particolari ocntesti di calcolo commerciale-finanziario. Il sistema si basa su **migliaia di nodi** (**CPU** standard ogniuna con memoria e _SO_) e si una **rete di interconnessioen custom molto potente** (larga banda e bassa latenza). È inoltre necessario disporre di software _capace di partizionare il lavoro e i dati su vari processori_
-- `DM-MIMD COW` (_Cluster Of Workstations_): Ha due caratteristiche principali: una **high-availability** che gli permette alla computazione di migrare da un nodo all'altro in caso di guasti, e un elevato **load-balancing** che permette di allocare i _task_ nel nodo con minor carico. Un esempio di questo tipo di connessioni è la **_Gigabit Ethernet_**
+- `DM-MIMD MPP` (_Massively Parallel Processing_): L'elaborazione `MMP` è utilizzata in applicazioni scientifiche e in particolari contesti di calcolo commerciale-finanziario. Il sistema si basa su **migliaia di nodi** (**CPU** standard ognuna con un proprio _OS_ e una propria memoria) e su una **rete di interconnessione _custom_ molto potente** (larga banda e bassa latenza). È inoltre necessario disporre di software _capaci di partizionare il lavoro e i dati su vari processori_
+- `DM-MIMD COW` (_Cluster Of Workstations_): Ha due caratteristiche principali:
+  - **High-availability**: permette alla computazione di migrare da un nodo all'altro in caso di guasti
+  - **High-load-balancing** : permette di allocare i _task_ nel nodo con minor carico. Un esempio di questo tipo di connessioni è la **_Gigabit Ethernet_**
 
 ### 2.4.2. Macchine a Memoria Condivisa SM-MIMD
 
@@ -148,33 +151,33 @@ A differenza delle `MD-MIMD` questa architettura ha una **scalabilità limitata*
 
 <div class="flexbox" markdown="1">
 
-|                |                   `SIMD`                    |                              `MIMD`                               |
-| :------------: | :-----------------------------------------: | :---------------------------------------------------------------: |
-|   **_hardware_**   |     Poco, Unica **Unità di Controllo**      |                Molto, tante **Unità di Controllo**                |
-|    **_costo_**     | Più costoso, hanno processori più specifici |         Meno costoso, hanno processori _general-purpose_          |
-|   **_memoria_**    |  Poca, hanno una sola copia del programma   |               Molta, hanno più copie del programmma               |
-| **_flessibilità_** |                    Poca                     | Alta flessibilità in termini di modelli computazionali supportati |
+|                    |                     `SIMD`                     |                              `MIMD`                               |
+| :----------------: | :--------------------------------------------: | :---------------------------------------------------------------: |
+|   **_Hardware_**   |     Poco<br/>Unica **Unità di Controllo**      |              Molto<br/>Tante **Unità di Controllo**               |
+|    **_Costo_**     | Costoso<br/>Necessita di processori specifici  |       Poco costoso<br/>Gira su processori _general-purpose_       |
+|   **_Memoria_**    | Poca<br/>Possiede una sola copia del programma |      Tanta<br/>Ogni unità possiede una copia del programmma       |
+| **_Flessibilità_** |                      Poca                      | Alta flessibilità in termini di modelli computazionali supportati |
 
 </div>
 
 
 Possiamo vedere di seguito uno schema esteso che visualizza le principali tassonomie:
 
-<img class="75" src="./images/Classificazione Architetture/Tassonomia Estesa.png">
+<img class="60" src="./images/Classificazione Architetture/Tassonomia Estesa.png">
 
 
 # 3. Tipologie di interconnessione
 
-Vediamo adesso diverse tipi di interconnessione, definnedo:
+Vediamo adesso diverse tipi di interconnessione. Per fare ciò definiamo:
 - **Grado della rete**: numero di connettori necessari per ogni nodo
-- **Diametro della rete**: distanza tra una coppia di nodi misurata in link
+- **Diametro della rete**: distanza massima tra una coppia di nodi misurata in numero di _link_
 
 <div class="grid2">
 <div class="">
 
 ## 3.1. Bus
 
-È la rete di interconnessione più semplice di tutte, composta da un unico _link_.
+È la rete di interconnessione più semplice di tutte, composta da un unico _link_ condiviso tra tutti i nodi.
 
 Ha alcune limitazioni di natura elettrica dovuta a interferenze elettromagnetiche, che possono degradare la velocità di connessione. Inoltre, nel caso di rottura del _link_ abbiamo zero tolleranza.
 
@@ -188,16 +191,18 @@ Questa rete ha:
 <div class="">
 <img class="" src="./images/Classificazione Architetture/Bus.png">
 </div>
-<hr><hr>
+</div>
+<hr/>
+<div class="grid2">
 <div class="">
 
 ## 3.2. Linear Array
 
-È una rete composta da $N-1$ _link_, che collega un nodo al successivo.
+È una rete composta da $N-1$ _link_, che collega un nodo al "successivo" e al "precedente".
 
 Questo permette di **_ridurre al minimo la competizione_**. Nel caso ideale infatti possiamo avere $\frac{N}{2}$ **comunicazioni in contemporanea**.
 
-In questa rete abbiamo nodi capaci di offrire servizi di _routing_, inoltrando informaizoni ai propri nodi adiacenti. La rottura di un nodo o di un _link_ crea due sottoreti che non possono comunicare.
+In questa rete abbiamo nodi capaci di offrire servizi di _routing_, inoltrando informazioni ai propri nodi adiacenti. La rottura di un nodo o di un _link_ crea due sottoreti che non possono comunicare tra loro.
 
 Questa rete ha:
 - **_Grado_** $1$ per il "primo" e l'"ultimo" nodo, $2$ per gli altri
@@ -207,7 +212,9 @@ Questa rete ha:
 <div class="">
 <img class="" src="./images/Classificazione Architetture/Linear Array.png">
 </div>
-<hr><hr>
+</div>
+<hr/>
+<div class="grid2">
 <div class="">
 
 ## 3.3. Ring
@@ -223,12 +230,16 @@ Questa rete ha:
 <div class="">
 <img class="" src="./images/Classificazione Architetture/Ring.png">
 </div>
-<hr><hr>
+</div>
+<hr/>
+<div class="grid2">
 <div class="">
 
 ## 3.4. Connessione Completa
 
-È la soluzione più costosa, talmente tando da non essere scalabile. Il numero di _link_ con $N$ nodi è di $\frac{N\cdot (N-1)}{2}$.
+È la soluzione più costosa, al punto da non essere scalabile.
+
+Il numero di _link_ con $N$ nodi è infatti di $\frac{N\cdot (N-1)}{2}$.
 
 Questa rete ha:
 - **_Grado:_** $N-1$
@@ -297,7 +308,7 @@ Questa rete ha:
 
 ## 3.8. Toro (2D)
 
-Considerando sempre $r = \sqrt{N}$, migliora la struttura della _Mesh 2D_. 
+Considerando sempre $r = \sqrt{N}$, migliora la struttura della _Mesh 2D_.
 
 Aumenta il numero totale di _link_ a $2N$, migliorano però notevolmente sia la resistenza ai guasti sia la scalabilità
 
@@ -315,7 +326,7 @@ Questa rete ha:
 
 Dato un ipercubo in $d$ dimensioni, abbiamo $N = 2^d$ nodi con $d \cdot \frac{N}{2} = d \cdot 2^{d-1}$ _link_.
 
-Quetsa architettura è _scalabile_ **solo** con un numero di nodi che è potenza di $2$.
+Questa architettura è _scalabile_ **solo** con un numero di nodi che è potenza di $2$.
 
 Questa rete ha:
 - **_Grado:_** $d$
@@ -334,7 +345,7 @@ Vediamo alcune metriche di prestazione, prendendo come riferimento un programma 
 
 Abbiamo che:
 - $T_1$: tempo di esecuzione su $1$ nodo
-- $T_n$: tempo di esecuzione su $n$ nodi
+- $T_N$: tempo di esecuzione su $N$ nodi
 
 ## 4.1. Speed-up
 
@@ -342,7 +353,7 @@ Lo _speed-up_ è:
 > Il rapporto tra l'esecuzione sequenziale con l'esecuzione con l'esecuzione su macchine `SIMD` o `MIMD`
 
 $$
-	S = \frac{T_1}{T_n}
+	S = \frac{T_1}{T_N}
 $$
 
 Ci aspettiamo che $S > 1$, ovvero di avere un guadagno di veocità all'aumentare dei nodi.
@@ -368,16 +379,20 @@ Il _tempo sequenziale_:
 > È il tempo impegato per eseguire istruzioni non parallelizzabili (operazioni I/O, costrutti condizionali, algoritmi intrinsecamente sequenziali)
 
 Questo parametro è legato dalla **_Legge di Amdahl_**:
-> Un parallelismo "perfetto" **_non è mai raggiungibile_** poiché saranno **_sempre presenti sequenze_** si _software_ intrinsecamente seriale
+> Un parallelismo "perfetto" **_non è mai raggiungibile_** poiché saranno **_sempre presenti sequenze_** di _software_ intrinsecamente seriale
 
-La legge ridefinisce lo _speed-up_:
+La legge ridefinisce lo _speed-up_ come:
 $$
+\boxed{
 	S = \frac{T_1}{T_{seq}+\frac{T_1-T_{seq}}{N}} = \frac{N\cdot T_1}{T_1 + T_{seq}(N-1)}
+}
 $$
 
 Possiamo notare che se $N \to \infty$:
 $$
+\boxed{
 	\lim_{N\to\infty}S = \frac{T_1}{T_{seq}}
+}
 $$
 
 Un esempio di algoritmo non parallelizzabile è il calcolo dell'$i$-esimo numero della sequenza di fibonacci:
@@ -392,7 +407,6 @@ $$
 
 Ha un importanza notevole nelle macchine parallele per mantenere uno sfruttamento delle **CPU** _molto elevato_.
 
-Per poter agire, **_deve rispettare il seguente vincolo_**:
-$$
-	P \gg N
-$$
+Per poter agire, **_deve rispettare il seguente vincolo_**: $P \gg N$
+
+Dove $P$ rappresenta il **numero di processi/task** disponibili.
