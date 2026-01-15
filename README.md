@@ -1,7 +1,7 @@
 # Appunti Sistemi Operativi  A.A. 2025-2026
 
 Questi sono gli appunti del corso Sistemi Operativi di 2025-2026 dell'Università di Pisa.
-Per una visualizzazione ottimale con formattazione completa, rendering delle formule matematiche e funzionamento dei link di navigazione, si consiglia di consultare la versione online disponibile su [GitHub Pages]().
+Per una visualizzazione ottimale con formattazione completa, rendering delle formule matematiche e funzionamento dei link di navigazione, si consiglia di consultare la versione online disponibile su [GitHub Pages](https://gabriele-d-cambria.github.io/Appunti-Sistemi-Operativi-2025-2026/).
 
 
 ## 📚 Informazioni sul Corso
