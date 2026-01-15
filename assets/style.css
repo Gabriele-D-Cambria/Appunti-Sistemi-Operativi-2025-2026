@@ -1,0 +1,444 @@
+div[class*="language"]{
+    border-radius: 5px;
+    padding: 1%;
+    width: 90%;
+    margin: 0em auto;
+    display: block;
+}
+
+/* Forza tutti i blocchi di codice C++ ad avere lo stesso stile */
+code[class*=language]:not([class*="plaintext"]) {
+    display: block !important;
+    background-color: #282C34 !important;
+    color: #ABB2BF !important;
+    border-radius: 6px;
+    padding: 1%;
+    width: 90%;
+    margin: 0em;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+div[class*="language"] pre, pre[class*="language"] {
+    margin: 0;
+    padding: 0;
+    border-radius: 6px;
+    background-color: #282C34 !important;
+    color: #ABB2BF !important;
+}
+
+
+table code[class*=language-plaintext]{
+    background-color: transparent !important;
+    border: none;
+    padding: 0px;
+}
+
+code[class*=language-plaintext]{
+    color: #98C379 !important;
+    background-color: rgba(171, 178, 191, 0.15) !important;
+    padding: 0.2em 0.4em !important;
+    border-radius: 6px !important;
+    font-size: 85% !important;
+    border: 1px solid rgba(171, 178, 191, 0.2) !important;
+    font-weight: bold !important;
+}
+
+
+blockquote {
+    border-left: 4px solid #30363d;
+    background-color: #161b22;
+    color: #8b949e;
+    padding-left: 16px;
+    margin-left: 0;
+    margin-right: 0;
+    color: #6a737d;
+    background-color: #f6f8fa;
+    padding: 16px;
+    border-radius: 5px;
+    border-top-right-radius: 15pt;
+    border-bottom-right-radius: 15pt;
+  }
+ 
+blockquote p {
+    margin: 0;
+    padding: 0;
+}
+blockquote p:not(:last-child) {
+    margin-bottom: 8px;
+}
+
+/* Immagini */
+img {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    padding-bottom: 2em;
+}
+*[class = "20"]{
+    width: 20%;
+}
+*[class = "25"]{
+    width: 25%;
+}
+*[class = "30"]{
+    width: 30%;
+}
+*[class = "40"]{
+    width: 40%;
+}
+*[class = "50"]{
+    width: 50%;
+}
+*[class = "60"]{
+    width: 60%;
+}
+*[class = "70"]{
+    width: 70%;
+}
+*[class = "75"]{
+    width: 75%;
+}
+*[class = "80"]{
+    width: 80%;
+}
+*[class = "90"]{
+    width: 90%;
+}
+*[class = "100"]{
+    width: 100%;
+}
+
+figcaption{
+    margin: 0 auto;
+    flex: 1 1 auto;
+    text-align: center;
+    align-content: center;
+    padding: 0%;
+}
+figure img{
+    width: 75%;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+}
+figure {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    margin-left: 0%;
+    margin-right: 0%;
+
+    width: 50%;
+}
+
+/* --- Tables --- */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 1em auto;
+    padding: 0;
+    width: auto;
+    overflow: auto;
+    display: table;
+    background-color: transparent;
+}
+
+table tr {
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    margin: 0;
+    padding: 0;
+}
+
+table tr:nth-child(2n) {
+    background-color: #f8f8f8;
+}
+
+table tr th {
+    font-weight: bold;
+    border: 1px solid #ccc;
+    text-align: center;
+    margin: 0;
+    padding: 6px 13px;
+    background-color: #f0f0f0;
+    font-style: italic;
+}
+
+table tr td {
+    border: 1px solid #ccc;
+    text-align: center;
+    margin: 0;
+    padding: 6px 13px;
+    font-style: normal;
+}
+
+table tr th:first-child,
+table tr td:first-child {
+    margin-top: 0;
+}
+
+table tr th:last-child,
+table tr td:last-child {
+    margin-bottom: 0;
+}
+
+.index tbody td:first-child {
+    text-align: right;
+    font-weight: bold;
+}
+
+/* --- Visualizzazione Flexbox e griglia --- */
+.flexbox{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: row;
+    padding-bottom: 1em;
+}
+
+/* Fix per tabelle Markdown dentro flexbox */
+.flexbox span {
+    display: contents;
+}
+
+.flexbox table {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+.grid2 {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+}
+
+.grid2 img {
+    display: block;
+    position: relative;
+    align-self: center;
+    justify-self: left;
+}
+.grid2 *:not(div[class="top"]) {
+    align-self: center;
+}
+.grid3 {
+    display: grid;
+    gap: 50px;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+.grid4 {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.grid3 *, .grid4 *{
+    align-items:center;
+    justify-items:stretch;
+}
+
+
+/* --- Paragrafi --- */
+.p {
+    text-align: center;
+    font-style: italic;
+}
+.subt{
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+    align-self: center;
+}
+.alert{
+    border: solid 2pt red;
+    border-radius: 1em;
+
+    padding: 0.5em;
+    margin: 0.5em;
+    background-color: lightcoral;
+    
+    color: black;
+    font-size: medium;
+}
+.alert b {
+    text-decoration: underline;
+    font-style: italic;
+    font-weight: 800;
+}
+
+.bigger{
+    font-size: 1.25em;
+    font-weight: bold;
+    font-style: italic;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+}
+/* .example {
+    background-color: rgba(211, 211, 211, 0.3);
+    border-radius: 5px;
+    padding: 10px;
+} */
+
+
+.example *{
+    all:unset;
+}
+
+/* CSS per MathJax - Blocchi matematici */
+
+/* Classe specifica per blocchi display che aggiungeremo via JavaScript */
+.math-display {
+    display: block !important;
+    text-align: center !important;
+    margin: 1em auto !important;
+}
+
+.math-display mjx-math{
+    line-height: 1.0 !important;
+    text-align: center;
+}
+
+/* Classe per math inline */
+.math-inline {
+    display: inline !important;
+    margin: 0 0.1em !important;
+}
+
+/* Stile per tutti i contenitori MathJax */
+mjx-container.MathJax {
+    font-size: larger !important;
+}
+
+/* Header di navigazione */
+.site-header {
+    background-color: transparent;
+    border-bottom: 1px solid #30363d;
+    padding: 1rem 0;
+    margin-bottom: 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(0);
+}
+
+.site-header.hidden {
+    transform: translateY(-100%);
+}
+
+.site-header.visible {
+    transform: translateY(0);
+}
+
+/* Compensazione per header fisso */
+body {
+    padding-top: 4rem;
+}
+
+.site-nav {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.nav-internal {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.home-link, .questions-link {
+    color: #58a6ff !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background-color: rgba(88, 166, 255, 0.1);
+    border: 1px solid rgba(88, 166, 255, 0.2);
+}
+
+.home-link:hover, .questions-link:hover {
+    background-color: rgba(88, 166, 255, 0.2);
+    border-color: rgba(88, 166, 255, 0.4);
+    transform: translateY(-1px);
+}
+
+.github-link {
+    color: #7d8590 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    background-color: rgba(125, 133, 144, 0.05);
+    border: 1px solid rgba(125, 133, 144, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.github-link:hover {
+    background-color: rgba(125, 133, 144, 0.15);
+    border-color: rgba(125, 133, 144, 0.4);
+    transform: translateY(-1px);
+}
+
+.github-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.separator {
+    color: #474c52;
+    font-weight: 300;
+}
+
+/* Responsive design per dispositivi mobili */
+@media (max-width: 768px) {
+    .site-nav {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .nav-internal {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .separator {
+        display: none;
+    }
+    
+    .nav-external {
+        margin-top: 0.5rem;
+    }
+}
+
+@media print{
+    @page{
+        size: A4 landscape;
+    }
+    .stop{
+        page-break-after: always;
+    }
+    .site-header{
+        display: none;
+    }
+}
