@@ -29,51 +29,50 @@ title: Gestione Processi
 
 # 2. Processi
 
-Informalmente il termine _processo_ viene utilizzato per indicare un programa in esecuzione.
-Più formalmente:
+Il termine _processo_ viene utilizzato in modo informale per indicare un programa in esecuzione.
+Una definizione più formale è la seguente:
 > Un **processo** rappresenta la _sequenza di eventi osservabili_ generati dall'elaboratore durante l'esecuzione di un programma. Identifica quindi _l'unità di esecuzione_ all'interno di un sistema operativo multiprogrammato.
 
-Più processi possono essere associati allo stesso programma, chaimate _istanze_. Ciascuna istanza rappresenta l'esecuzione dello stesso codice con dati in ingresso diversi.
+Più processi possono essere associati allo stesso programma, in quel caso prendono il nome di _istanze_. Ciascuna istanza rappresenta quindi l'esecuzione dello stesso codice con dati in ingresso diversi.
 
-Infatti al variare dei valori di ingresso uno stesso processo può avere storie diverse (svilupparsi in `if-else` branch diverse, iterare più volte uno stesso ciclo, ...).
+Infatti al variare dei valori di ingresso uno stesso processo può avere storie diverse (svilupparsi in _if-else-branch_ diversi, iterare più o meno volte uno stesso ciclo, ...).
 
 ## 2.1. Stato di un processo
 
 Un sistema operativo multiprogrammato in particolare **consente l'esecuzione concorrente di più processi**.
 
 La **CPU**, in un sistema multiprogrammato, passa da un processo all'altro ad elevatissima velocità, tale per cui l'utente ha l'impressione che i vari processi vengano eseguiti _parallelamente_.
-In realtà la **CPU** non esegue nulal in parallelo, in quanto può eseguire sempre e solo una istruzione alla volta. Chiamiamo però questo fenomeno: **_parallelismo virtuale_**.
+In realtà la **CPU** non esegue nulla in parallelo, in quanto può eseguire sempre e solo una istruzione alla volta. Chiamiamo però questo fenomeno: **_parallelismo virtuale_**.
 Il _parallelismo fisico_ invece è possibile solo in presenza di **più CPU**.
 
-Dato il continuo scambio di processi la **CPU** deve essere in grado di salvarene lo stato al momento che esso viene interrotto, in modo che quando riprenderemo con la sua esecuzione saremo in grado di farlo senza generare errori.
+Dato il continuo scambio di processi la **CPU** deve essere in grado di salvare lo stato di ciasuno di esso nel momento in qui viene interrotto. Così facendo, quando riprenderemo con la sua esecuzione, saremo in grado di farlo senza generare errori.
 
-In sistemi _monoprogrammati_ gli stati possibili nei quali un processo può essere nel suo _lifetime_ sono:
+Nei sistemi _monoprogrammati_ gli stati possibili nei quali un processo può essere nel suo _lifetime_ sono due:
 - `attivo`: quando il processo ha il possesso della **CPU**
 - `bloccato`: quando il processo non ha il possesso della **CPU**, perché è in attesa del verificarsi di un evento.
 
 In questi sistemi un processo cambia i due stati tramite:
 - **Sospensione**: il processo si mette in _CPU-idle_ e mette a lavoro una periferica
-- **Riattivazione**: la periferica, termianto il lavoro, invia un _interruzione esterna_ alla **CPU** riattivando il processo
+- **Riattivazione**: la periferica, terminato il lavoro, invia un _interruzione esterna_ alla **CPU** riattivando il processo
 
-Attenzione, il fatto che il processo è bloccato non significa che le sue risorse non possano cambiare. Infatti, se il processo è stato bloccato a seguito di una richiesta di recupero dati da parte di un dispositivo esterno nella memoria, il `DMA` sovrascrive la memoria.
+Attenzione, il fatto che il processo è bloccato non significa che le sue risorse non possano cambiare. Infatti, se il processo è stato bloccato a seguito di una richiesta di recupero dati da parte di un dispositivo esterno nella memoria, il `DMA` sovrascrive la memoria del processo mentre questo è bloccato.
 
 Inoltre, il fatto che la **CPU** sia nello stato _idle_, non significa che è spenta. È infatti proprio lei a rendersi conto dell'arrivo dell'interruzione esterna segnalata dall'`APIC`.
 Dovrà quindi esistere un modo per effettuare controlli sull'arrivo delle interruzioni esterne.
 
 Quindi i sistemi monoprogrammati hanno senso solo se:
-> L'unico processo **_deve includere anche il sistema operativo e le sue strutture dati_**
+> L'unico processo presente **_deve includere anche il sistema operativo e le sue strutture dati_**
 
-In sistemi _multiprogrammati_, se il numero di **CPU** è minore del numero di processi, esiste un ulteriore stato:
-- `attivo`: diviso in due:
-  - `in esecuzione`: ha assegnata la **CPU**
-  - `pronto`: in attesa di andare in esecuzione
-- `bloccato`:  è una condizione nella quale si mette il processo in attesa di qualche evento
+In sistemi _multiprogrammati_, se il numero di **CPU** è minore del numero di processi, esiste un ulteriore sotto-stato:
+- `attivo`: diviso adesso in due sotto-stati:
+  - `in esecuzione`: il processo ha assegnata la **CPU**
+  - `pronto`: il processo è in attesa di andare in esecuzione
+- `bloccato`: il processo è in attesa di qualche evento
 
-La transizione `esecuzione` $\to$ `pronto` si chiama _revoca della **CPU**_, oppure _reapage_.
-La transizione inversa invece si parla di _assegnazione_.
+La transizione `esecuzione` $\to$ `pronto` si chiama _revoca della **CPU**_, oppure _reapage_, mentre la transizione inversa si dice _assegnazione_.
 
-In questa modalità solo i processi in `esecuzione` possono _sospendersi_ nello stato `**bloccato**`. Inoltre, la **CPU** in questo caso **_non è necessariamente idle_**, ma potrebbe essere _busy_, sia con processi utente sia con processi sitema (come processi di manutenzione).
-Inoltre un `processo` bloccato che viene _riattivato_ va a finire nello stato `pronto`.
+In questa modalità solo i processi in `esecuzione` possono _sospendersi_ nello stato **`bloccato`**. Inoltre, la **CPU** in questo caso **_non è necessariamente idle_**, ma potrebbe essere _busy_, sia con processi utente sia con processi sitema (come processi di manutenzione).
+Oltre a ciò, un `processo` bloccato che viene _riattivato_ va a finire nello stato `pronto`.
 
 In questi sistemi si introduce adesso il problema di scegliere però quale processo `pronto` dovrà andare in esecuzione.
 Il meccanismo che effettua questa scelta si chiama _scheduler_.
@@ -89,17 +88,17 @@ Questo modello viene chiamato **_Modello a cinque stati_**:
 <img class="" src="./images/Gestione Processi/five-state-model.png">
 
 
-Per riuscire a mantenere in maniera consistente e corretta le varie informazioni del processo mentre esso transita nei vari stati è necessario avere una struttura dati specifica, chiamata **descrittore di processo**. L'allocazione del **descrittore di processo**, e della memoria a lui risevata sancisce la creazione del processo.
+Per riuscire a mantenere in maniera consistente e corretta le varie informazioni del processo mentre esso transita nei vari stati è necessario avere una struttura dati specifica, chiamata **descrittore di processo**. L'allocazione del **descrittore di processo**, e della memoria a lui risevata sanciscono la creazione del processo.
 
 In questo modo il singolo processo non si rende conto che la sua esecuzione è stata interrotta, ma crede di aver avuto il possesso della **CPU**, chiamata proprio per questo **CPU virtuale**, per tutto il suo _lifespan_.
 Le **CPU virtuali** sono dotate di _program counter_ e _registri_, che contengono le informazioni relative ad ogni processo alle quali sono associate,.
 
 Lo processo è quindi rappresentato da:
 - **Codice**: puntatore a un file che contiene il codice del processo
-- **Dati**: Dipendono dal programma. È quindi necessario che il codice eseguibile sia definito in modo tale da dare un idea chiara delle variabili e delle strutture dati necessarie al programa. Verosibilmente anche in questo caso avremo un puntatore alla memoria principale, in quanto memorizzare tutti i dati in una struttura sarebbe estremamente difficile
-- **Program Counter**, **Registri** e **Stack**: per poter descrivere un processo sospeso/bloccato è necessario averne memorizzato lo stato di quando era in _esecuzione_. Questi strumenti ci permettono di farlo.
+- **Dati**: Dipendono dal programma. È quindi necessario che il codice eseguibile sia definito in modo tale da dare un idea chiara delle variabili e delle strutture dati necessarie al programa. Verosibilmente, anche in questo caso avremo un puntatore alla memoria principale, in quanto memorizzare tutti i dati in una struttura sarebbe estremamente difficile
+- **Program Counter**, **Registri** e **Stack**: per poter descrivere un processo sospeso/bloccato è necessario avrer memorizzato lo stato di quando era in _esecuzione_. Questi strumenti ci permettono di farlo.
 
-Un processo è quindi identificato anche dallo _stato_ che specifica cosa esso sta facendo in questo momento. Proprio il fatto che esso possa essere bloccato o messo in attesa giustifica la necessità di memorizzare i campi del processo in un **descrittore**.
+Un processo è quindi identificato anche dallo _stato_ che specifica cosa esso sta facendo in questo momento. Il fatto che possa essere bloccato o messo in attesa giustifica la necessità di memorizzare i campi del processo in un **descrittore**.
 
 Ad un processo possono anche essere associate delle risorse:
 - **Memoria**: il programma potrebbe chiedere di descrivere delle strutture dati in memoria _heap_ attraverso delle `new`. È quindi importante mantenere anche un puntatore a questa memoria
@@ -124,7 +123,7 @@ Questi hanno dimensione variabile nel corso del _lifespan_ del processo.
 
 </div>
 <div class="">
-<img class="75" src="./images/Gestione Processi/virtual-memory-scheme.png">
+<img class="20" src="./images/Gestione Processi/virtual-memory-scheme.png">
 </div>
 </div>
 
@@ -134,34 +133,38 @@ Abbiamo già detto che ad ogni processo è associato un **descrittore di process
 I descrittori sono a loro volta organizzati in una tabella, chiamata **tabella dei processi**.
 
 All'interno di un descrittore di processo sono salvati i dati:
-- **Nome del processo**: nei sistemi `Unix` si utilizza un numero naturale, detto _Process ID_ (`pid`). Il numero di `bit` sul quale si codifica il `pid` determina il numero massimo di processi. Inoltre vanno gestiti i `pid` dei processi termianti (vedremo che lo farà direttamente un meccanismo all'interno del _kernel_)
+- **Nome del processo**: nei sistemi `Unix` si utilizza un numero naturale, detto _Process ID_ (`pid`). Il numero di `bit` sul quale si codifica il `pid` determina il numero massimo di processi. Inoltre, vanno gestiti i `pid` dei processi termianti (vedremo che lo farà direttamente un meccanismo all'interno del _kernel_)
 - **Stato del processo**
-- **Modalità di servizio dei processi**
-- **Informazioni sulla gestione della memoria**: vedremo che qui saranno contenuti dei puntatori che permette di mantenere le informazioni sugli indirizzi di memoria allocati
-- **Contesto del processo**: registri della **CPU** utilizzati durante il cambio di contesto
-- **Utilizzo delle risposte**: in `Unix` ci sono dei puntatori a tabelle logiche del sistema (dispositivi I/O assegnati, file aperti, tempo di uso della **CPU**)
+- **Modalità di servizio dei processi**: ha un ruolo diverso a seconda del tipo di sistema operativo:
+  - Nei sistemi _priority_ contiene l'importanza relativa del processo nei confronti degli altri
+  - Nei sistemi a _suffivisione del tempo_ contiene invece il quanto di tempo che la **CPU** può dedicare allo stesso
+  - Nei sistemi _real-time_ contiene il tempo massimo entro il quale la richiesta deve essere soddisfatto
+- **Informazioni sulla gestione della memoria**: vedremo che qui saranno contenuti dei puntatori che permettono di mantenere le informazioni sugli indirizzi di memoria allocati
+- **Contesto del processo**: contiene le informaizoni relative ai registri della **CPU** utilizzati durante il cambio di contesto
+- **Utilizzo delle risposte**: in `Unix` ci sono dei puntatori a tabelle logiche del sistema (dispositivi I/O assegnati, file aperti, tempo di uso della **CPU**, ...)
 - **Identificazione del processo successivo**: L'ultimo dato è necessario per poter correttamente implementare le code di processi.
 
 
 All'interno del sistema sono presenti tante code di processi, si dividono generalmente in due macrocategorie:
-- `coda pronti`: potremmo anche averne più di una in alcuni casi
-- `coda processi bloccati`:
+- `coda pronti`: contiene i descrittori dei processi in attesa di andare in esecuzione.Vedremo come in alcuni casi potremmo anche averne più di una
+- `coda processi bloccati`:contiene i descrittori dei processi che attendono l'arrivo di una _interruzione esterna_ per poter tornare nello stato `pronti`
 
 ## 2.4. Cambi di Contesti
 
 L'utilizzo della **CPU** viene commutato da un processo all'altro. Ogni volta che si effetta questa commutazione hanno luogo una serie di azioni
 1. **Salvataggio stato**: si salva il contesto del processo in `esecuzione` nel suo descrittore
 2. Inserimento del descrittore nella coda adeguata (`bloccati`, `pronti`, ...)
-3. **Short term scheduling**: Si seleziona un altro processo dalla coda dei processi `pronti` e si carica il suo `pid` nel registro che identifica il _processo in esecuzione_. Questa scelta è fatta dallo _scheduler_
-4. **Ripristino di stato**: detto anche _dispatch_, carica il contesto del nuovo processo dal suo descrittore ai registri del processore.
+3. **Short term scheduling**: Lo _scheduler_ seleziona un altro processo dalla coda dei processi `pronti` e si carica il suo `pid` nel registro che identifica il _processo in esecuzione_.
+4. **Ripristino dello stato**: detto anche _dispatch_, carica il contesto del nuovo processo dal suo descrittore ai registri del processore.
 
 Vedremo più a fondo che non sono i processi ad effettuare le azioni, ma i **Soggetti**.
-I **Soggetti** sono composti da:
-- Processo
-- User ID
-- Group ID
 
-Vedremo come gli ultimi due permettono di implementare i sistemi di protezione in sistemi multiutente.
+I **Soggetti** sono composti da:
+- _**Processo**_
+- _**User ID**_
+- _**Group ID**_
+
+Inoltre, analizzeremo come gli ultimi due permettono di implementare i sistemi di protezione in sistemi multiutente.
 
 I processi si dividono in:
 - **Processi Pesanti**: è necessario descrivere sia lo stato di esecuzione che lo stato di tutto lo spazio di memoria.
@@ -172,25 +175,30 @@ Se un processo pesante ha dei _thread_ interni, questi condividono lo spazio di 
 
 ## 2.5. Creazione e Terminazioni di Processi
 
-Un processo, detto padre, più richiedere la creazione di un nuovo processo, chiamato figlio, generando una gerarchia di processi.
+Un processo, detto _padre_, può richiedere tramite apposite _syscall_ la creazione di un nuovo processo, chiamato _figlio_, generando una gerarchia di processi.
+Le politiche di scelta di quale programma il processo _figlio_ eseguirà (così come i dati e le risorse condivise) possono variare da sistema a sistemi.
 
-Ogni processo è **figlio di un altro processo**, e può essere a sua volta _padre di altri processi_.
+Ogni processo è quindi **figlio di un altro processo**, e può essere a sua volta _padre di altri processi_.
 
-L'OS mantiene nel descrittore le informazioni relative alle relazioni paternali. Alla terminazione di un processo ci sono due conseguenze:
-- Il padre può rilevare che il figlio è stato terminato
-- Tutti i figli vengono terminare
+L'_OS_ mantiene nel descrittore le informazioni relative alle relazioni paternali. 
+
+Alla terminazione di un processo ci possono essre più politiche di segnalazione ai processi antenati.
+Nei sistemi `UNIX` quando un processo figlio termina mentre il padre non è ancora terminato non entra nello stato `terminato`, ma in uno stato `zombie`.
+Grazie a questo stato intermedio, il processo padre può rilevare la terminazione dei propri processi figli. Quando la terminazione di un processo figlio viene rilevata, questo effettivamente termina.
+
+Inoltre, sempre in `UNIX` la terminazione di un processo padre comporta **la terminazione di tutti i processi figli**.
 
 ## 2.6. Processi concorrenti
 
 Due processi si dicono **concorrenti** se le loro esecuzioni si _sovrappongono nel tempo_, o, più in generale:
-> Se la prima operazione di uno cominci prima che termini l'ultima dell'altro, generando fenomeni di _interleaving_ (1 processore) o _overlapping_ (più processori).
+> Se la prima operazione di un processo avviene prima che termini l'ultima operazione dell'altro, generando fenomeni di _interleaving_ (1 processore) o _overlapping_ (più processori).
 
-Possiamo definire quindi anche i processi **indipendenti**:
+Possiamo definire anche i processi **indipendenti**:
 > Se il risultato prodotto dall'esecuzione di uno **non è influenzato** da quella di dell'altro, e viceversa.
 
-Non consideriamo nella relazione di _indipendenza_ l'influenza temporale, che è innegabile e non trascurabile. Consideriamo quindi solamente l'influenza logica, chiamando la relazione **proprietà della riproducibilità**.
+Non consideriamo nella relazione di _indipendenza_ l'influenza temporale, che è innegabile e non trascurabile, ma ci limitiamo a considerare solamente l'influenza logica, chiamando la relazione **proprietà della riproducibilità**.
 
-Definiamo quindi anche i processi **interagenti**:
+Definiamo quindi i processi **interagenti**:
 > Se il risultato prodotto dall'esecuzione di uno **è influenzato** da quella dell'altro, e viceversa
 
 In questo caso, la presenza di un altro processo può andare a modificare il risultato prodotto dal processo.
@@ -201,8 +209,8 @@ I processi possono quindi interagire:
 - **Cooperazione**: se due processsi vogliono eseguire un'attività comune mediante scambio di informazioni
 
 Il ruolo del _kernel_ è quello di realizzare l'astrazione di **CPU virtuale** fornendo la possibilità di:
-- Fornire le funzioni di risposta alle interruzioni
-- Permettendo il cambio di contesto tra i processi
+- Avere funzioni di risposta alle interruzioni
+- Permettere il cambio di contesto tra i processi
 
 # 3. Scheduling
 
@@ -253,22 +261,20 @@ Vedremo inoltre altre tecniche di schedulazione:
 
 ## 3.1. Valutazione algoritmi di Scheduling
 
-Possiamo valutare gli algoritmi secondo diversi parametri:
+Definendo come $\Delta_{B_i}$ i **CPU-Burst** e come $\Delta_{a_i}$ i **IO-Burst**, possiamo valutare gli algoritmi secondo diversi parametri:
 
 <div class="flexbox" markdown="1">
 
-| Parametro                                            | Formula                                       | Valore Desiderato                          |
-| ---------------------------------------------------- | --------------------------------------------- | ------------------------------------------ |
-| **Utilizzo della CPU**                               | $E = \frac{\sum{\Delta_{B_i}}}{T}$            | Tendente a $1$                             |
-| **Tempo medio di completamento** (_turnaround time_) | $T = \sum{\Delta_{B_i}} + \sum{\Delta_{a_i}}$ | Il più piccolo possibile                   |
-| **Produttività** (_throughput rate_)                 | $\frac{1}{T_M}$                               | Il più grande possibile                    |
-| **Tempo di Risposta**                                | $T$                                           | Minimizzato (coincide con il _turnaround_) |
-| **Tempo di Attesa**                                  | $\sum_i{t_{a_i}}$                             | Minimizzato                                |
-| **Rispetto dei Vincoli Temporali**                   | -                                             | Soddisfatto                                |
+| Parametro                                            | Formula                                         | Valore Desiderato                          |
+| ---------------------------------------------------- | ----------------------------------------------- | ------------------------------------------ |
+| **Utilizzo della CPU**                               | $E = \frac{\sum{\Delta_{B_i}}}{T}$              | Tendente a $1$                             |
+| **Tempo medio di completamento** (_turnaround time_) | $T_m = \sum{\Delta_{B_i}} + \sum{\Delta_{a_i}}$ | Il più piccolo possibile                   |
+| **Produttività** (_throughput rate_)                 | $\frac{1}{T_M}$                                 | Il più grande possibile                    |
+| **Tempo di Risposta**                                | $T_m = \sum{\Delta_{B_i}} + \sum{\Delta_{a_i}}$ | Minimizzato (coincide con il _turnaround_) |
+| **Tempo di Attesa**                                  | $A_m = \sum_i{t_{a_i}}$                         | Minimizzato                                |
+| **Rispetto dei Vincoli Temporali**                   | -                                               | Soddisfatto                                |
 
-<small>($\Delta_{B_i}$ sono i CPU-Burst)</small>
 </div>
-
 
 ## 3.2. Algoritmo `FCFS`
 
@@ -277,6 +283,7 @@ Possiamo valutare gli algoritmi secondo diversi parametri:
 
 Quando un processo entra nella coda dei processi `pronti` il suo descrittore viene collegato **all'ultimo elemento della coda**. Quando la **CPU** è libera viene assegnata al processo il cui descrittore si trova nella _testa della coda_.
 È a tutti gli effetti equivalente alla politica `FIFO`.
+
 La gestione della coda processi, mantenendo riferimenti alla cima e al fondo, ha quindi complessità:
 - $O(1)$ per gli inserimenti
 - $O(1)$ per le estrazioni
@@ -289,13 +296,35 @@ Uno schema per capire come funziona può essere il seguente:
 Ipotizziamo i seguenti processi in arrivo:
 
 <div class="flexbox" markdown="1">
-
-| Processo | Tempo di Arrivo | CPU-Burst |
-| :------: | :-------------: | :-------: |
-|   `P0`   |        0        |    10     |
-|   `P1`   |        2        |    100    |
-|   `P2`   |        4        |    24     |
-|   `P3`   |        6        |    16     |
+<table><thead>
+<tr>
+	<th align="center">Processo</th>
+	<th align="center">Tempo di Arrivo</th>
+	<th align="center">CPU-Burst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td align="center"><code>P0</code></td>
+	<td align="center">0</td>
+	<td align="center">10</td>
+</tr>
+<tr>
+	<td align="center"><code>P1</code></td>
+	<td align="center">2</td>
+	<td align="center">100</td>
+</tr>
+<tr>
+	<td align="center"><code>P2</code></td>
+	<td align="center">4</td>
+	<td align="center">24</td>
+</tr>
+<tr>
+	<td align="center"><code>P3</code></td>
+	<td align="center">6</td>
+	<td align="center">16</td>
+</tr>
+</tbody></table>
 </div>
 
 </div>
@@ -331,20 +360,47 @@ Possiamo anche dedurre che questo algoritmo viene pesantemente deabilitato da pr
 
 ## 3.3. Algoritmo `SJF`
 
-È un algoritmo a priorità statica non preemptive. La prierità viene assegnata ad ogni processo su base inversa rispetto al suo **CPU-Burst**, che per ora supponiamo noto.
+È un algoritmo a priorità statica non preemptive. La priorità viene assegnata ad ogni processo su base inversa rispetto al suo **CPU-Burst**, che per ora supponiamo noto.
 <div class="grid2">
 <div class="">
 
 Con lo stesso esempio di prima
 
 <div class="flexbox" markdown="1">
-
-| Processo | Tempo di Arrivo | CPU-Burst | Priorità |
-| :------: | :-------------: | :-------: | :------: |
-|   `P0`   |        0        |    10     |    0     |
-|   `P1`   |        2        |    100    |    3     |
-|   `P2`   |        4        |    24     |    2     |
-|   `P3`   |        6        |    16     |    1     |
+<table><thead>
+<tr>
+	<th align="center">Processo</th>
+	<th align="center">Tempo di Arrivo</th>
+	<th align="center">CPU-Burst</th>
+	<th align="center">Priorità</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td align="center"><code>P0</code></td>
+	<td align="center">0</td>
+	<td align="center">10</td>
+	<td align="center">0</td>
+</tr>
+<tr>
+	<td align="center"><code>P1</code></td>
+	<td align="center">2</td>
+	<td align="center">100</td>
+	<td align="center">3</td>
+</tr>
+<tr>
+	<td align="center"><code>P2</code></td>
+	<td align="center">4</td>
+	<td align="center">24</td>
+	<td align="center">2</td>
+</tr>
+<tr>
+	<td align="center"><code>P3</code></td>
+	<td align="center">6</td>
+	<td align="center">16</td>
+	<td align="center">1</td>
+</tr>
+</tbody></table>
 </div>
 
 </div>
@@ -358,7 +414,7 @@ Grafico non in scala
 </div>
 </div>
 
-Quetso algoritmo, indipendentemente dall'ordine di arrivo, ordina i processi nel modo che abbiamo visto ottimizzava `FCFS`.
+Questo algoritmo, indipendentemente dall'ordine di arrivo, ordina i processi nel modo che abbiamo visto ottimizzava `FCFS`.
 Tuttavia in questo algoritmo abbiamo più _overhead_.
 
 Infatti l'inserimento in coda pronti è adesso un inserimento ordinato, perciò ha una complessità $O(n)$. Nel totale quindi sarà: $O(FCFS) + O(n) = O(1) + O(n) = O(n)$
@@ -367,20 +423,43 @@ Inoltre, essendo **non preemptive**, ha la limitazione che nel caso di arrivo di
 
 ## 3.4. Algoritmo `SRTF`
 
-È un miglioramento di `STF`, che introduce la possibilità di essere **preemptive**.
-Inoltre, proprio per via delal _preemption_, non si guarderà più la **CPU-Burst** iniziale del processa, ma quella che gli rimane da eseguire. Infatti, nel caso un processo con **CPU-Burst** elevata (100) che però sta per finire (rimanente 2), non ha senso sostituirlo con un altro appena arrivato che magari ha **CPU-Burst** (50), più breve di quella iniziale ma molto più alta di quella rimanente.
+È un miglioramento di `SJF`, che introduce la possibilità di essere **preemptive**.
+Inoltre, proprio per via della _preemption_, non si guarderà più la **CPU-Burst** iniziale del processo, ma quella che gli rimane da eseguire. 
 
+Infatti, nel caso un processo con **CPU-Burst** elevata (100) che però sta per finire (rimanente 2), non ha senso sostituirlo con un altro appena arrivato che magari ha **CPU-Burst** (50), che è sì più breve di quella iniziale ma molto più alta di quella rimanente.
 
 <div class="grid2">
 <div>
 <div class="flexbox" markdown="1">
-
-| Processo | Tempo di Arrivo | CPU-Burst |
-| :------: | :-------------: | :-------: |
-|   `P0`   |        6        |    10     |
-|   `P1`   |        0        |    100    |
-|   `P2`   |        4        |    24     |
-|   `P3`   |        2        |    16     |
+<table><thead>
+<tr>
+	<th align="center">Processo</th>
+	<th align="center">Tempo di Arrivo</th>
+	<th align="center">CPU-Burst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td align="center"><code>P0</code></td>
+	<td align="center">6</td>
+	<td align="center">10</td>
+</tr>
+<tr>
+	<td align="center"><code>P1</code></td>
+	<td align="center">0</td>
+	<td align="center">100</td>
+</tr>
+<tr>
+	<td align="center"><code>P2</code></td>
+	<td align="center">4</td>
+	<td align="center">24</td>
+</tr>
+<tr>
+	<td align="center"><code>P3</code></td>
+	<td align="center">2</td>
+	<td align="center">16</td>
+</tr>
+</tbody></table>
 </div>
 
 </div>
@@ -402,7 +481,7 @@ Per risolvere si utilizzano tecniche di _aging_, che monitorano i tempi di attes
 ### 3.4.1. Stima della CPU-Burst
 
 Non sempre sappiamo a priori il **CPU-Burst** di un processo.
-Si utilizza quindi la media esponenziale per stimarlo, tenendo conto della storia dei valori misurati nei precedenti intervalli di esecuizone
+Si utilizza quindi la media esponenziale per stimarlo, tenendo conto della storia dei valori misurati nei precedenti intervalli di esecuzione:
 
 $$
 \begin{align*}
@@ -433,13 +512,35 @@ La coda viene gestita in questo caso con modalità `FIFO` (_First-In-Fisrt-Out_)
 
 Prendendo questo esempio:
 <div class="flexbox" markdown="1">
-
-| Processo | Ordine della cosa | CPU-Burst |
-| :------: | :---------------: | :-------: |
-|   `P0`   |        1°         |    100    |
-|   `P1`   |        2°         |    150    |
-|   `P2`   |        3°         |    10     |
-|   `P3`   |        4°         |    10     |
+<table><thead>
+<tr>
+	<th align="center">Processo</th>
+	<th align="center">Ordine della coda</th>
+	<th align="center">CPU-Burst</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+	<td align="center"><code>P0</code></td>
+	<td align="center">1°</td>
+	<td align="center">100</td>
+</tr>
+<tr>
+	<td align="center"><code>P1</code></td>
+	<td align="center">2°</td>
+	<td align="center">150</td>
+</tr>
+<tr>
+	<td align="center"><code>P2</code></td>
+	<td align="center">3°</td>
+	<td align="center">10</td>
+</tr>
+<tr>
+	<td align="center"><code>P3</code></td>
+	<td align="center">4°</td>
+	<td align="center">10</td>
+</tr>
+</tbody></table>
 </div>
 
 Con il quanto di tempo $Q = 20$ abbiamo la situazione mostrata sulla destra
@@ -473,24 +574,28 @@ Ipotizziamo di avere `3 code` ordinate con:
 3. `FCFS`
 
 Questo sistema introduce nuovi problemi:
-- Dove inserire i nuvoi processi?
-- Dove inserire i processi al momento del'uscita dall'esecuzione
-- Da quale delle code estrarre il nuovo processo?
+- In quale coda inseriamo i nuovi processi?
+- In quale coda inseriamo i processi al momento del'uscita dall'esecuzione
+- Da quale delle code estraiamo il nuovo processo?
 
-La soluzione a questo problema è dare **una priorità alle code**. La logica che seguiremo sarà la seguente:
-1. Lo _scheduler_ controlla la coda non priorità più alta non ancora controllata
+Per risolvere questi problemi assegnamo a ciascuna coda **una priorità**. 
+
+La logica che seguiremo sarà quindi la seguente:
+1. Lo _scheduler_ controlla la coda con priorità più alta non ancora controllata
    1. Se è **non vuota** ne estrae un processo secondo l'algoritmo associato
    2. Se è vuota procede con la coda successiva
 
-Introdurre la priorità comporta però la generazione di problemi di _starvation_ nelle code con priorità più bassa, tuttavia abbiam ogià visto che è possibile implementare dei processi di _aging_ che permettono di aumentare la priorità di un processo eventualmente cambandone la coda.
+Come sempre, introducendo il concetto di priorità, introduciamo anche la generazione di problemi di _starvation_ nelle code con priorità più bassa, tuttavia abbiamo anche visto come è possibile implementare processi di _aging_ che permettono di aumentare la priorità di un processo, in questo caso cambandone eventualmente la coda.
 
-Nell'assegnare le priorità ai processi viene spesso fatta una distinzione tra due gruppi di processi: **interattivi** (_foreground_) e **batch** (_background_). Questi tipi di processi hanno tempi di risposta diversi, necessitando esigenze di priorità diverse: i processi interattivi sono caratterizzati da **CPU-Burst** brevi, supportando bene algoritmi come i `RR` anche con intervalli piccoli, poiché tendono a terminare prima della fine della loro finestra sulla **CPU**. I programmi _batch_ invece sono caratterizzati da **CPU-Burst** più grandi e prediligono algoritmi che effettuano meno scambi a parità di tempo.
+Nell'assegnare le priorità ai processi viene spesso fatta una distinzione tra due gruppi di processi: **interattivi** (_foreground_) e **batch** (_background_). 
+
+Questi tipi di processi hanno tempi di risposta diversi, necessitando esigenze di priorità diverse: 
+- I processi _interattivi_ sono caratterizzati da **CPU-Burst** brevi, supportando bene algoritmi `RR` anche con intervalli piccoli, poiché tendono a terminare prima della fine della loro finestra sulla **CPU**. 
+- I processi _batch_ sono caratterizzati da **CPU-Burst** più grandi e prediligono algoritmi che effettuano meno scambi per unità di tempo.
 
 Sarà uno dei compiti dello _schedulatore_ quello di assegnare ad ogni processo la coda che lo rende più efficiente.
 
-All'interno dei sistemi però non è noto a priori se un nuovo processo è _batch_ o _interattivo_. Dobbiamo quindi cercare di gestire dinamicamente le code processi.
-
-Implementiamo quindi una **_Multi-Level Feedback Queue_**.
+All'interno dei sistemi però non è noto a priori se un nuovo processo è _batch_ o _interattivo_, perciò dobbiamo cercare di gestire dinamicamente queste code, implementando di fatto una **_Multi-Level Feedback Queue_**.
 
 Il sistema operativo, alla creazione di un nuovo processo, lo inserisce nella **coda di livello zero**, ovvero in quella a priorità più alta.
 Un processo inserito in questa coda attenderà in media $\overline{N_0}\cdot 10$ unità di tempo prima di andare in esecuzione.
@@ -498,7 +603,7 @@ Un processo inserito in questa coda attenderà in media $\overline{N_0}\cdot 10$
 
 Se il **CPU-Burst** del processo fosse minore dell'intervallo di `10ms` il processo può:
 - Terminare: alché semplicemente si procede ad estrarne un altro
-- Si sospende: il processo viene rimosso dalle code, per essere reinserito quando sarà di nuovo pronto
+- Si sospende: il processo viene rimosso dalle code, per essere poi reinserito quando sarà di nuovo pronto
 
 Se invece il **CPU-Burst** fosse maggiore, la _preemption_ lo sostituisce e lo inserisce nella **coda di livello 1**.
 Lo _scheduler_ allora procede ad estrarre un nuovo processo **_sempre dalla coda 0_**.
@@ -509,7 +614,7 @@ Una stima del tempo medio di attesa di un processo nella coda 1 è $\overline{N_
 Anche in questo caso il processo potrebbe andare in terminazione/sospensione, comportandosi analogamente a quando abbiamo fatto l'analisi per il livello 0.
 
 Se il **CPU-Burst rimanente** fosse maggiore anche di `50ms` verrà nuovamente sostituito dalla _preemption_, venendo inserito stavolta nella coda di livello 2.
-Qui il processo attenderà non solo che le altre due code debbano essere vuote, ma che anche i processi inseriti prcedentemente nella coda terminino. Questo tempo, per quanto non calcolabile, è certamente finito.
+Qui il processo attenderà non solo che le altre due code debbano essere vuote, ma che anche i processi inseriti precedentemente nella coda terminino. Questo tempo, per quanto non calcolabile, è certamente finito.
 
 Nello studio fino a questo punto abbiamo però ignorato il fatto che il nostro sistema sia _dinamico_. Ciò comporta che con il passare del tempo si hanno costantemente nuovi processi in entrata nella coda di livello 0. Ciò comporta una _starvation_ per le altre code a priorità minore, che si vedono sempre passare davanti i nuovi processi.
 
@@ -521,7 +626,7 @@ Per ovviare a questo problema, rendiamo la coda `FCFS` **_preemptive per l'inser
 
 ## 3.7. Schedulazione di sistemi in tempo reale
 
-Gli algoritmi che abbiamo visto fin'ora, per quanto comunque funzionali, non si applicano bene a sistemi _embedded_ dove dobbiamo soddisfare anche altre risorse.
+Gli algoritmi che abbiamo visto fin'ora, per quanto comunque funzionali, non si applicano bene a sistemi _embedded_ dove dobbiamo soddisfare anche altri requisiti.
 I sistemi _embedded_ infatti sono caratterizzati da un sistema operativo multiprogrammato che **elabora parametri in tempo reale**.
 
 I sistemi in tempo reale possono essere rappresentati come sistemi con **CPU**, **RAM**, memoria flash e, soprattutto, due classi principali di periferiche: **_attuatori_** (_output_) e **_sensori_** (_input_).
@@ -602,8 +707,8 @@ Le sezioni barrate sono le sezioni di **CPU-idle**.
 </div>
 
 Questo algoritmo è **ottimo** nella classe degli algoritmi a priorità statica.
-In particolare, se è possibile schedulare delgi eventi a priorità statica **_se e solo se_** possiamo farlo tramite `RM`.
-
+In particolare, esiste òa proprietà che:
+> È possibile schedulare degli eventi a priorità statica **_se e solo se_** possiamo farlo tramite `RM`.
 
 ### 3.7.2. Valutazione Esistenza dell'algoritmo
 
@@ -615,31 +720,31 @@ $$
 \begin{CD}
 	{
 		\sum_{i=0}^N{\underbrace{n_i}_{\text{frequenza}} \cdot C_i} \le T
-	} \\
-	@VVV \\
+	}
+	@>>>
 	{
 		\sum_{i=0}^N{\frac{T}{t_i} \cdot C_i} \le T
-	} \\
-	@VVV\\
+	}
+	@>>>
 	\boxed{
 		\sum_{i=0}^N{C_i \over t_i} \le 1
 	}
 \end{CD}
 $$
 
-Definiamo come **_Fattore di utilizzazione della CPU_**:
+Definiamo come **_Fattore di utilizzo della CPU_**:
 $$
-	U := \sum_{i=0}^N{C_i \over t_i}
-$$
-
-Se prendessimo ad esempio l'esempio precedente:
-$$
-	U = \frac{1}{2} + \frac{1}{5} = \frac{7}{10} \le 1
+	\quad U := \sum_{i=0}^N{C_i \over t_i}
 $$
 
-Operativamente nella realtà la formula è leggermente diversa, dato che non possiamo far coincidere la deadline con il periodo, rendendo la formula reale qualcosa del genere:
+Prendendo l'esempio precedente, otteniamo che il fattore di utilizzo:
 $$
-	U \le 1 - \alpha
+	\quad U = \frac{1}{2} + \frac{1}{5} = \frac{7}{10} \le 1
+$$
+
+Operativamente nella realtà la formula è leggermente diversa, dato che non possiamo far coincidere la deadline con il periodo, rendendo la formula r9eale qualcosa del genere:
+$$
+	\quad U \le 1 - \alpha
 $$
 
 ### 3.7.3. Earliest Deadline First
@@ -681,10 +786,10 @@ Fin'ora abbiamo visto che un processo è sia un elemento che possiede risorse, s
 
 Ogni processo ha una spazio di indirizzamento distinto da quello degli altri processi. Questo dipende dalla tecnica di gestione della memoria adottata (pagine, segmenti, ...).
 
-In un sistema di processi concorrenti le operazioni di scambio possono generare _overhead_ onerosi, comportanto salvataggio e ripristino dello spazio di indirizzamento.
+In un sistema di processi concorrenti le operazioni di scambio possono generare _overhead_ onerosi, comportando salvataggio e ripristino dello spazio di indirizzamento.
 Questo accade anche alla creazione e alla terminazione di un processo.
 
-La separazione degli spazi di indirizzamento favorsice sì l'utilizzo nei casi di interazioni basate sullo scambio di messaggi, ma rende complesso l'utilizzo di frequenti interazioni basate su strutture dati condivise.
+La separazione degli spazi di indirizzamento be favorsice sì l'utilizzo nei casi di interazioni basate sullo scambio di messaggi, ma rende complesso l'utilizzo di frequenti interazioni basate su strutture dati condivise.
 
 Proprio per ottenere una soluzione a questi problemi è stata introdotta la separazione dei processi in due elementi:
 - **_Thread_** (_Processo Leggero_): l'elemento al quale viene assegnata la **CPU**
@@ -692,12 +797,12 @@ Proprio per ottenere una soluzione a questi problemi è stata introdotta la sepa
 
 Un _thread_ rappresenta un **flusso di esecuzione** all'interno di un _task_. All'interno di un _task_ è possibile definire più _thread_, attraverso tecniche di _multithreading_, ciascuno dei quali **condivide le risorse del processo**, **_risiedendo nello stesso spazio di indirizzamento e accedendo agli stessi dati_**.
 
-Non possedendo risorse (se non lo _stack_), i _thread_ possono essere creati e distrutti più facilmente rispetto ai processi, così come ne è più semplice ed efficace il cambio di contesto.
+Non possedendo risorse indipendenti (se non lo _stack_), i _thread_ possono essere creati e distrutti più facilmente rispetto ai processi, così come ne è più semplice ed efficace il cambio di contesto.
 
 A livello utente esistono delle librerie che permettono di strutturare un programma attraverso i _thread_ in esecuzione parallela, permettendo i passaggi tra _thread_ senza richiedere il supporto del sistema operativo.
 
 
-Nei sistemi `Unix` originali i programmi erano caratterizzati dal possedere un solo _thread_. Il cambio di contesto cambiava proprio processo e non tra due _thread_ dello setsso.
+Nei sistemi `Unix` originali i programmi erano caratterizzati dal possedere un solo _thread_.
 
 Nei sistemi `Windows` e `Linux` moderni, il _kernel_ gestisce **_direttamente i thread_**, utilizzando al massimo le potenzialità di un sistema multiprocessore.
 
@@ -710,18 +815,15 @@ Il sistema `UNIX` suddivide le informaiozni tipicamente contenute nel `PCB` di u
 
 <img class="" src="./images/Gestione Processi/UNIX-des-proc.png">
 
-Il codice dei processi `UNIX` si dice **rientrante**, ovvero può essere condiviso da più processi. Per permettere ciò il _kernel_ gestisce una struttura dati globale detta **_text table_** nella quale ogni elemento rappresenta il codice di un programma correttamente eseguito da uno o più processi.
+Il codice dei processi `UNIX` si dice **rientrante**, ovvero può essere condiviso da più processi. Per permettere ciò, il _kernel_ gestisce una struttura dati globale detta **_text table_** nella quale ogni elemento rappresenta il codice di un programma correttamente eseguito da uno o più processi.
 In particolare, ogni elemento della _text table_ è detto **_text structure_** e contiene un puntatore all'area di memoria in cui è allocato il codice.
 Se il processo fosse _swapped_ esso è un riferimento alla **memoria secondaria**.
 
-<div class="grid2">
-<div class="">
 
-L'immagine sulla destra classifica le comonenti dell'immagine in base alla **_visibilità_** (`user`/`kernel`) e alla **_possibilità di swapping_** (`resident`/`swappable`)
+<figure class="">
+<img class="100" src="./images/Gestione Processi/UNIX-process-image.png">
+<figcaption>
 
-</div>
-<div class="">
-<img class="" src="./images/Gestione Processi/UNIX-process-image.png">
-</div>
-</div>
-
+Una classificazione delle componenti in base alla **_visibilità_** (`user`/`kernel`) e alla **_possibilità di swapping_** (`resident`/`swappable`).
+</figcaption>
+</figure>
