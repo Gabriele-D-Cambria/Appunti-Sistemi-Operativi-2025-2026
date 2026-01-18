@@ -1,5 +1,5 @@
 ---
-title: Sincronizzazione dei processi
+title: Sincronizzazione dei Processi
 ---
 
 # 1. Indice
@@ -43,7 +43,7 @@ Questi processi possono interagire in tre modi:
 Per lo studio della sincronizzazione faremo riferimento a due modelli:
 <div class="grid2">
 <div class="top">
-<div class="p">A Memoria Comune</div>
+<p class="p">A Memoria Comune</p>
 
 <img class="" src="./images/Sincronizzazione Processi/common-memory-model.png">
 
@@ -53,13 +53,13 @@ L'accesso a queste risorse deve essere protetto da **_mutua esclusione_**.
 
 </div>
 <div class="top">
-<div class="p">A Memoria Locale</div>
+<p class="p">A Memoria Locale</p>
 
 <img class="" src="./images/Sincronizzazione Processi/local-memory-model.png">
 
 I processi hanno solo spazio di indirizzamento privato.
 
-Tuttavia, è possibile accedere a porzioni private di memoria di altri processi attraverso **_scambio di messaggi_** dei processi, che si devono adoperare per richiedere, copiare e inviare le porzioni di memoria.
+Tuttavia, è possibile accedere a porzioni private di memoria di altri processi attraverso **_scambio di messaggi_**. In questo modo i ci si deve adoperare per richiedere, copiare e inviare le porzioni di memoria desiderate.
 
 L'accesso alle strutture nei messaggi deve quindi essere protetto sia da **_mutua esclusione_** che da **_sincronizzazione_**.
 
@@ -68,12 +68,13 @@ L'accesso alle strutture nei messaggi deve quindi essere protetto sia da **_mutu
 
 ## 2.1. Processi a memoria condivisa
 
-Per ripassare le condizioni di **mutua esclusione** e **sincronizzazione** consiglio di consultare  [gli appunti di Calcolatori dedicati](https://gabriele-d-cambria.github.io/Appunti-Calcolatori-Elettronici-2024-2025/Semafori#2-semafori).
+Per ripassare le condizioni di **mutua esclusione** e **sincronizzazione** si consiglia di consultare  [gli appunti di Calcolatori dedicati](https://gabriele-d-cambria.github.io/Appunti-Calcolatori-Elettronici-2024-2025/Semafori#2-semafori).
 
-Un altra implementazione può essere quella di avere una nuova istruzione atomica `TSL` (_test-and-set_) che permette di leggere il valore di un bit e settarlo a 1.
+Tuttavia esistono altre implementazione degli stessi. Una prima implementazione diversa può essere quella di introdurre una nuova istruzione atomica `TSL` (_test-and-set_) che permette di leggere il valore di un bit e settarlo a 1.
 Per fare queste due operazioni (lettura e scrittura) l'operazione mette un _lock sul bus_, così da **_avere atomicità delle operazioni_**.
+In questo modo infatti **solo una CPU ha accesso alla memoria**, e non può avvenire che un'altra ne modifichi lo stato durante le operazioni di lettura e scrittura.
 
-Con questo supporto _hardware_ possiamo immaginare di avere una funziona:
+Introducendo questo supporto _hardware_, possiamo immaginare di strutturare due funzioni:
 ```x86asm
 lock(x):
 	TSL registro, x
@@ -88,7 +89,7 @@ unlock(x):
 
 In questo modo la verifica del _lock_ sull'oggetto `x` è compiuta in modo **_atomico_**.
 
-Il problema delle _sezioni critiche_ che richiedono atomicità viene risolto così:
+Il problema delle _sezioni critiche_, che richiedono atomicità, viene quindi risolto in questo modo:
 ```cpp
 // --- Thread A --- //
 
@@ -103,12 +104,11 @@ lock(x); 	// Prologo
 unlock(x); 	// Epilogo
 ```
 
-Questa soluzione, per quanto efficace, pone il processo che trova il _lock_ in una **_busy-wait_**, nel quale si è a tutti gli effetti in un ciclo di attesa.
-Tendenzialmente questo _busy-wait_ rientra nell'ordine dei nanosecondi, in un paio di cicli di clock.
+Questa soluzione, per quanto efficace, pone però il processo che trova il _lock_ in una **_busy-wait_**, nel quale si è a tutti gli effetti in un ciclo di attesa. Questo tendenzialmente non è un problema in quanto rientra nell'ordine dei nanosecondi (un paio di cicli di clock).
 
 Inoltre, questo approccio **_funziona anche nei sistemi multiprocessore_**.
 
-Torniamo adesso a parlare di **_semafori_**. Attraverso i semafori possiamo proteggere le _sezioni critiche_:
+Torniamo però a parlare di **_semafori_**. Attraverso i semafori possiamo proteggere le _sezioni critiche_:
 ```cpp
 // --- Thread 1 --- //
 wait(mutex);	// Prologo
@@ -144,7 +144,7 @@ unlock(x);
 
 ## 2.2. Processi a Memoria Locale
 
-Nel caso di processi a memoria distribuita, non possiamo più utilizzare semafori condivisi.
+Nel caso di processi a memoria distribuita (o locale), non possiamo più utilizzare semafori condivisi.
 
 È quindi necessario implementare un meccanismo `ICP` (_Inter-Process-Communication_), ovvero dobbiamo creare dei **canali tra processi**, in modo di poter scambiare messaggi da un processo all'altro.
 
@@ -152,29 +152,29 @@ Nel caso di processi a memoria distribuita, non possiamo più utilizzare semafor
 <img class="100" src="./images/Sincronizzazione Processi/comunication-channel-example.png">
 <figcaption>
 
-I processi assumono dei ruoli: _mittente_ (`send()`) e _destinatario_ (`receive`)
+I processi assumono dei ruoli: _mittente_ (`send()`) e _destinatario_ (`receive()`)
 </figcaption>
 </figure>
 
-Lo strumento più elementare è quelo basato su due primitive
-- `send(dest, message)`: permette di inviare un messaggio ad un destinatario. Può essere di tre tipi:
-  - **Asincrona**: dopo l'invio il mittente non si preoccupa del corretto arrivo del messaggio
-  - **Sincrona**: il mittente si blocca finché non è sicuro che il destinatario ha ottenuto correttamente il messaggio (ad esempio attende un `ACK`)
-  - **Tipo chiamata di procedura remota**: è utilizzata quando il processo mittente chiede l'esecuzione di un servizio tramite procedura remota al destinatario. In questo caso i due processi oeprano su _due processori_ collegati da una _rete di cominicazione_.
+Lo strumento più elementare è quello basato su due primitive:
+- `send(dest, message)`: permette di inviare un messaggio ad un destinatario. L'invio può essere di tre tipi:
+  - **Asincrono**: dopo l'invio il mittente non si preoccupa del corretto arrivo del messaggio
+  - **Sincronp**: il mittente si blocca finché non è sicuro che il destinatario ha ottenuto correttamente il messaggio (ad esempio attende un `ACK`)
+  - **A chiamata di procedura remota**: è utilizzata quando il processo mittente chiede l'esecuzione di un servizio tramite procedura remota al destinatario. In questo caso i due processi oeprano su _due processori_ collegati da una _rete di comunicazione_.
 	Questo tipo di `send` mette il processo mittente in attesa fin quando il servizio richiesto non è terminato e il risultato ricevuto.
-- `receive(src, message)`: permettte di ricevere un messaggio. È possibile specificare una determinata origine oppure non specificarlo. Anch'essa può essere di due tipi
+- `receive(src, message)`: permettte di ricevere un messaggio. È possibile specificare una determinata origine, ma non è obbligatorio. Può essere implementana in due modi:
   - **Asincrona**: consente la prosecuzione dell'esecuzione del processo anche in assenza di messaggi
   - **Sincrona**: provoca la sospensione del processo che la esegue nel caso non ci fossero messaggi in attesa di essere serviti. All'arrivo del primo pessaggio il processo viene risvegliato
 
 Un messaggio ha tipicamente il seguente formato:
 
-<img class="" src="./images/Sincronizzazione Processi/message-format.png">
+<img class="30" src="./images/Sincronizzazione Processi/message-format.png">
 
 
 Possiamo quindi vedere un esempio di **comunicazione diretta simmetrica**:
 <div class="grid2">
 <div class="top">
-<div class="p">Produttore</div>
+<p class="p">Produttore</p>
 
 ```cpp
 pid C = /*......*/;
@@ -190,7 +190,7 @@ main(){
 
 </div>
 <div class="top">
-<div class="p">Consumatore</div>
+<p class="p">Consumatore</p>
 
 ```cpp
 pid P = /*.......*/;
@@ -210,7 +210,7 @@ main(){
 Nel caso di **comunicazione diretta asimmetrica**:
 <div class="grid2">
 <div class="top">
-<div class="p">Produttore</div>
+<p class="p">Produttore</p>
 
 ```cpp
 pid C = /*......*/;
@@ -226,7 +226,7 @@ main(){
 
 </div>
 <div class="top">
-<div class="p">Consumatore</div>
+<p class="p">Consumatore</p>
 
 ```cpp
 main(){
@@ -249,11 +249,11 @@ Nel caso di modelli _client-server_ non abbiamo una comunicazione diretta attrav
 
 Si introduce una specie di _mailbox_ per il _server_, detta **porta** o **_socket_**.
 
-Un _socket_ possiamo immaginarlo come un processo che implementa una coda di messaggi.
+Possiamo immaginare i _socket_  come dei processi che implementano una coda di messaggi.
 
 In questo modello, le `synchronized send` si bloccano non finché il messaggio arriva al destinatario, ma finché il messaggio viene **_inserito nella mailbox_**.
 
-Ogni processo _server_ può avere più _socket_ diverse identificati da un `numero di porta`, così da poter meglio dividere le informaizoni e ottimizzare l'esecuzione.
+Ogni processo _server_ può quindi avere più _socket_ diversi identificati da `numero di porta` diversi. Questo permette di dividere le informazioni e ottimizzare l'esecuzione.
 
 Questa parte viene chiamata tipicamente **_Sistemi Operativi delle Reti Informatiche_**, e non la vedremo più di tanto in questo corso.
 
@@ -266,15 +266,22 @@ Alcuni classici problemi che si verificano quando viene proposto un nuovo schema
 
 ## 3.1. Bounded-Buffer Problem
 
-Immaginiamo di avere:
-- $N$ buffer, ogniuno che contiene al più 1 elemento
-- Un semaforo `mutex` inizializzato a `1`
-- Un semaforo `msg` inizializzato a `0`
-- Un semaforo `buf` inizializzato a `N` che indica il numero di buffer disponibili
+Immaginiamo di avere un _buffer_ con capacità massima di $N$ elementi (per comodità circolare) e due processi che lo condividono:
+- **Produttore**: genera dati e li inserisce nel _buffer_
+- **Consumatore**: preleva dati dal buffer e li elabora
+
+Le sfide che il problema ci introduce sono tre:
+1. **Overflow**: il produttore non deve scrivere nel _buffer_ se questo è pieno
+2. **Underflow**: il consumatore non deve leggere il _buffer_ se questo è vuoto
+3. **Mutua Esclusione**: il produttore e il consumatre non devono mai manipolare i puntatori del buffer o una stessa cella di memoria nello stesso istante.
+
+La soluzione classica a questo problema prevede tre semafori:
+- `buf = sem_ini(N)`: indica il numero di buffer vuoti, permette di risolvere il problema dell'_overflow_
+- `msg = sem_ini(0)`: indica il numero di buffer pieni, permette di risolvere il problema dell'_underflow_
+- `mutex = sem_ini(1)`: permette di risolvere il problema della mutua esclusione
 
 <div class="grid2">
 <div class="top">
-
 
 Un esempio di processo **produttore**:
 ```cpp
@@ -293,12 +300,12 @@ do{
 Un esempio di processo **consumatore**:
 ```cpp
 do{
-	wait(buf);
+	wait(msg);
 
 	wait(mutex);
 		// remove item
 	signal(mutex);
-	signal(msg);
+	signal(buf);
 }while(true);
 ```
 
@@ -308,24 +315,25 @@ do{
 
 ## 3.2. Readers and Writers Problem
 
-Abbiamo un set di dati _condivisi tra più processi concorrenti_. Questi si dividono in:
-- **Lettori**: possono solo leggere i dati **senza poterli modificare**
+Abbiamo un set di dati _condivisi tra più processi concorrenti_, che si dividono in:
+- **Lettori**: possono solo leggere i dati **_senza poterli modificare_**
 - **Scrittori**: possono sia leggere che **_scrivere_**
 
-Se avessimo più lettori non esisterebbero problemi, in quanto nessuno più modificare i dati per gli altri.
+Se avessimo solamente processi lettori non avremmo problemi, in quanto nessuno può modificare i dati per gli altri.
 
-Nel momento in cui introduciamo uno **Scrittore**, questo potrebbe modificare i dati, rendendo i dati letti dai _Lettori_ inconsistenti.
+Nel momento in cui introduciamo anche un solo **Scrittore**, questo potrebbe modificare i dati, rendendo i dati letti dai _Lettori_ inconsistenti.
 
 Esistono diverse politiche per la gestione di _scrittori_ e _lettori_, la prima (e più semplice) è che:
 > Ci può essere _**al massimo uno scrittore**_ alla volta. Se lo _scrittore_ è presente **_non ci possono essere lettori_**.
 
-Ovvero dobbiamo implementare una _mutua esclusione_ tra **scrittori e scrittori** e **scrittori e lettori**.
+Questa politica ci impone implementare due _mutue esclusioni_:
+- Tra **scrittori e scrittori**: solo uno alla volta può accedere alla risorsa.
+- Tra **scrittori e lettori**: se c'è uno scrittore nessun altro può accedere alla risorsa. Se ci sono lettori altri lettori nessuno scrittore può accedere.
 
-Vediamo un primo esempio definendo:
-- Un set di dati
-- Un semaforo `mutex = 1`
-- Un semaforo `wrt = 1`
+Vediamo un primo esempio definendo un set di dati e:
+- Un semaforo `wrt = 1`: protegge gli accessi multipli tra più scrittori
 - Un contatore `readcount = 0`
+- Un semaforo `mutex = 1`: protegge il contatore da stati inconsistenti
 
 <div class="grid2">
 <div class="top">
@@ -333,6 +341,7 @@ Vediamo un primo esempio definendo:
 Un esempio di processo **scrittore**:
 ```cpp
 do{
+	// Verifico di essere l'unico scrittore
 	wait(wrt);
 
 	// scritture
@@ -348,19 +357,26 @@ Un esempio di processo **lettore**:
 do{
 	// Proteggo `readcount` da stati inconsistenti
 	wait(mutex);
+		// Mi segno come lettore
 		readcount++;
-		if(readcount == 1)
+		// Se sono il primo lettore
+		if(readcount == 1){
+			// Verifico che non ci siano scrittori
+			// E impedisco a eventuali scrittori futuri di accedere
 			wait(wrt);
+		}
 	signal(mutex);
 
 	// lettura
 
 	wait(mutex);
-
+	// Mi rimuovo tra i processi lettori
 	readcount--;
-	if(readcount == 0)
+	// Se non è rimasto più nessuno
+	if(readcount == 0){
+		// Notifico ad eventuali scrittori futuri che possono accedere
 		signal(wrt);
-
+	}
 	signal(mutex);
 }while(true);
 ```
@@ -373,9 +389,11 @@ In questa implementazione si possono mettere in attesa:
 
 |         | Scrittori | Lettori |
 | :-----: | :-------: | :-----: |
-| `mutex` |    $0$    |  $N_L$  |
+| `mutex` |    $0$    |  $N_L$*  |
 |  `wrt`  |   $N_S$   |   $1$   |
+
 </div>
+<small>(In realtà il primo lettore non è propriamente in attesa su `mutex`. Può essere però in attesa su `wrt` mentre possiede il gettone del `mutex`)</small>
 
 
 Esistono diverse variazioni di questo problema:
@@ -401,9 +419,9 @@ I filosofi stanno prevalentemente nello stato _thinking_, ma ogni tanto vogliono
 
 Al tavolo però si trovano solamente **5 bacchette** (_chopsticks_) `c[i]` distribuite in modo da essercene una tra ogni coppia di filosofi.
 
-Per mangiare un filosofo segue le seguenti regole:
-1. Prendi la bacchetta a destra
-2. Prendi la bacchetta a sinistra
+Quando vuole mangiare un filosofo segue le seguenti regole:
+1. Prende la bacchetta a destra
+2. Prende la bacchetta a sinistra
 3. Mangia
 4. Posa la bacchetta a sinistra
 5. Posa la bacchetta a destra
@@ -442,16 +460,18 @@ Questo algoritmo possiede un principale punto critico.
 
 Immaginiamo che tutti i processi riescano a prendere possesso del primo `chopstick[i]` ma vengano interrotti "in cascata" (`0` $\to \dots \to$`5`) prima di poter prendere il secondo.
 
-Quando tutti avranno recuperato la prim bacchetta, e proveranno a recuperare la seconda, entreranno **_tutti nello stato `bloccato`_**, generando un **_deadlock_** (_blocco_).
+Quando i processi avranno recuperato la prima bacchetta e proveranno a recuperare la seconda, entreranno **_tutti nello stato `bloccato` in cascata_**, generando un **_deadlock_** (_blocco_).
+
+Per visualizzare graficamente l'accesso alle risorse possiamo utilizzare dei grafi, come quello sulla destra.
 
 </div>
 <div class="">
 <figure class="100">
-<img class="75" src="./images/Sincronizzazione Processi/dp-deadlock-graph.png">
+<img class="60" src="./images/Sincronizzazione Processi/dp-deadlock-graph.png">
 <figcaption>
 
-All'interno del grafo i _deadlock_ sono rappresentati da **_cicli_**.
-Non tutti i _cicli_ rappresentano però _deadlock_, solo quando le risorse sono presenti in **_singola istanza_**
+Tutti _deadlock_ sono rappresentati da **_cicli_**.
+Non tutti i _cicli_ rappresentano _deadlock_: solo quando le risorse coinvolte sono presenti in **_singola istanza_**
 </figcaption>
 </figure>
 
@@ -463,7 +483,7 @@ Possiamo prevenire il _deadlock_ in tre modi:
 - **Deadlock Avoidance**: mantenere la logica del programma ma aggiungere dei controlli che evitano le situazioni di _deadlock_
 - **Deadlock Detection**: implementare un algoritmo che cerca di capire se si è verificato un _deadlock_ e lo slega
 
-Vedremo meglio i _deadlock_ nel [capitolo successivo](#4-deadlock).
+Vedremo meglio i _deadlock_ nel [capitolo successivo](#4-deadlock), adesso introduciamo invece una nuova astrazione per pensare ad una prima soluzione al problema dei filosofi.
 
 ## 3.4. Monitor
 
@@ -492,9 +512,9 @@ monitor monitorName{
 <div class="grid2">
 <div class="">
 
-Per definizione **_un solo processo alla volta più essere attivo dentro al monitor_**, ovvero le _procedure sono mutualmente esclusive_.
+Per definizione **_un solo processo alla volta può essere attivo dentro al monitor_**, ciò rende le procedure _mutualmente esclusive_.
 
-Se un processo sta eseguendo una delle procedure del `monitor`, gli altri processi **attendono in coda** (`entryQueue`).
+Se un processo sta infatti eseguendo una delle procedure del `monitor`, gli altri processi che vi vogliono accedere **attendono in coda** (`entryQueue`).
 
 Questo meccanismo non è però ancora sufficientemente potente da poter risolvere alcuni schemi di sincronizzazione.
 </div>
@@ -503,11 +523,11 @@ Questo meccanismo non è però ancora sufficientemente potente da poter risolver
 </div>
 <div class="">
 
-Per migliorarne l'efficacia si definiscono all'interno del `monitor` delle **_variabili di condizionamento_**.
+Per migliorarne l'efficacia si definiscono quindi all'interno del `monitor` delle **_variabili di condizionamento_**.
 
 Ad ogni _condition variable_ (`condition x;`) all'interno del `monitor` il sistema assegna due operazioni:
 - `x.wait()`: sospende l'operazione in attesa di una `x.signal()`
-- `x.singla()`: riprende l'esecuzione di uno dei processi che ha chiamato la `x.wait()`. Se nessun processo aveva chiamato la `x.wait()` **non ha alcun effetto**.
+- `x.signal()`: riprende l'esecuzione di uno dei processi che ha chiamato la `x.wait()`. Se nessun processo aveva chiamato la `x.wait()` **non ha alcun effetto**.
 </div>
 <div class="">
 <img class="" src="./images/Sincronizzazione Processi/monitor-variables-scheme.png">
@@ -520,13 +540,13 @@ Abbiamo due opzioni possibili:
 - **Signal and wait**: facciamo **riprendere** `Q` dandogli la precedenza su `P` anche se questo era in esecuzione.
 - **Signal and continue**: facciamo **_proseguire_** `P`, mettendo in attesa della mutua esclusione `Q`
 
-AMbedue le opzioni hanno dei pro e dei contro, e sta al implementatore del linguaggio scegliere quale delle due opzioni selezionare.
+Ambedue le opzioni hanno dei pro e dei contro, e sta all'implementatore scegliere quale delle due opzioni selezionare.
 
-I `monitor` sono implementati in diversi linguaggi di programmazione, come `C#` e `Java`.
+I `monitor` sono nativamente implementati in diversi linguaggi di programmazione, come `C#` e `Java`.
 
 ### 3.4.1. Soluzione al Dining Philosophers Problem
 
-Vediamo un implementazione della soluzione al problema:
+Vediamo quindi un implementazione della soluzione al problema sfuttando proprio i _monitor_:
 ```cpp
 monitor DiningPhilosophers{
 	enum {THINKING, HUNGRY, EATING} state[5];
@@ -611,7 +631,7 @@ else
 	signal(mutex);
 ```
 
-Le varie `condition variable` saranno implementate:
+Uno scheletro dell'implementazione delle varie `condition variable` è il seguente:
 ```cpp
 class condition{
 	sem x_sem = sem_ini(0);
@@ -651,7 +671,7 @@ Possiamo vedere l'implementazione di un `monitor` per un allocatore di risore:
 monitor ResourceAllocator{
 	bool busy;
 	condition x;
-	
+
 	void acquire(int time){
 		while(busy){
 			x.wait(time);
@@ -671,7 +691,7 @@ monitor ResourceAllocator{
 ```
 ## 3.5. Sincronizzazione Pthread
 
-La `Pthreads API` è **_indipendente dal sistema operativo_**.
+La libreria `Pthreads API` è una libreria **_indipendente dal sistema operativo_**.
 
 Fornisce nativamente `mutex locks` e `condition variables` e, tramite estensioni, permette di includere `r/w locks` e `spinlocks`.
 
@@ -686,8 +706,7 @@ Un esempio semplice che ci può aiutare a capire cos'è un deadlock è quando un
 
 Immaginiamo poi che `P1` richieda il disco 2 e `P2` richieda il disco 1, ecco generato un _deadlock_.
 
-
-Possiamo altrimenti semplificarei il _problema dei cinque filosofi_ con due semplici semafori, dove:
+Recuperanodo l'esempio del _problema dei cinque filosofi_, rappresentiamo le azioni con due semafori:
 ```cpp
 sem A = sem_ini(1);
 sem B = sem_ini(1);
@@ -701,20 +720,22 @@ wait(B);
 wait(A);
 ```
 
-Se il processo `0` venisse interrotto dopo `wait(A)` ma prima di eseguire `wait(B)`, il processo `1` farebbe la `wait(B)` generando di fatto il _deadlock_ poiché in tutti i casi tutte le `wait` competono per risorse già bloccate e non rilasciate.
+Se il processo `0` venisse interrotto dopo `wait(A)` ma prima di eseguire `wait(B)`, il processo `1` farebbe la `wait(B)` generando di fatto il _deadlock_ poiché da quel punto in qualsiasi istruzione `wait` compete per risorse già bloccate e non ancora rilasciate.
 
-Abbiamo già detto che esistono diversi modi per prevenire il _deadlock_:
-- **Deadlock Prevention**: cambiare la logica del programma evitando le situazioni di _deadlock_
-- **Deadlock Avoidance**: mantenere la logica del programma ma aggiungere dei controlli che evitano le situazioni di _deadlock_
-- **Deadlock Detection**: implementare un algoritmo che cerca di capire se si è verificato un _deadlock_ e lo slega
+Abbiamo già detto che esistono diversi modi per affrontare il problema del _deadlock_:
+- **Deadlock Prevention**: consiste nel cambiare la logica del programma al fine di evitare le situazioni di _deadlock_
+- **Deadlock Avoidance**: consiste nel mantenere la logica del programma ma aggiungere dei controlli che evitano le situazioni di _deadlock_
+- **Deadlock Detection**: consiste nel implementare un algoritmo che cerca di capire se si è verificato un _deadlock_ e slegarlo
 
 ## 4.1. Condizioni di Deadlock
 
 Per avere _deadlock_ **_sono necessarie quattro condizioni che si verificano simultaneamente_**
 - **Mutua Esclusione**: solo un processo per volta può usare una risorsa
-- **Hold and Wait**: un processo che trattiene almeno una risorsa sta attendende altre risorse trattenute da altri processi
-- **No preemption**: una risorsa può essere rilasciata _solo volontariamente_ dal processo che la sta trattenendo dopo che ha terminato il task
-- **Attesa Circolare**: esiste un set $\{P_0, P_1, ..., P_n\}$ di processi in attesa dove il processo $P_i$ sta attendendo una risorsa trattenuta da $P_{i+1}, \quad \forall i \in [0, n-1]$ e $P_n$ attende la risorsa trattenuta da $P_0$
+- **Hold and Wait**: un processo che trattiene almeno una risorsa sta attendendo altre risorse attualmente trattenute da altri processi
+- **No preemption**: una risorsa può essere rilasciata _solo volontariamente_ dal processo che la sta trattenendo dopo che questo ha terminato il task
+- **Attesa Circolare**: esiste un set $\bigl\{P_0, P_1, ..., P_n\bigr\}$ di processi in attesa dove
+  - $\forall i \in [0, n-1]$ il processo $P_i$ sta attendendo una risorsa trattenuta da $P_{i+1}$
+  - $P_n$ attende la risorsa trattenuta da $P_0$
 
 ## 4.2. Grafo di allocazione risorse
 
@@ -745,15 +766,15 @@ Attraverso la rappresentazione grafica possiamo dire che:
 Vediamo alcuni esempi:
 <div class="grid3">
 <div class="top">
-<div class="p">Grafo senza deadlock</div>
+<p class="p">Grafo senza deadlock</p>
 <img class="" src="./images/Sincronizzazione Processi/rag-no-deadlock.png">
 </div>
 <div class="top">
-<div class="p">Grafo con deadlock</div>
+<p class="p">Grafo con deadlock</p>
 <img class="" src="./images/Sincronizzazione Processi/rag-deadlock.png">
 </div>
 <div class="top">
-<div class="p">Grafo con cicli ma senza deadlock</div>
+<p class="p">Grafo con cicli ma senza deadlock</p>
 <img class="" src="./images/Sincronizzazione Processi/rag-cycle-no-deadlock.png">
 </div>
 </div>
@@ -766,11 +787,11 @@ Alcuni di questi metodi permettono comunque al sistema di entrare nello stato di
 
 Nella realtà la maggior parte dei sistemi operativi, compresi quelli basati su `UNIX`, fanno la cosa più semplice: _ignorano il problema e fanno finta che i deadlock non possano mai avvenire nel sistema_, noi vedremo comunque dei metodi di prevenzione.
 
-Nel caso di **mutua esclusione** un modo per prevenire i _deadlock_ è utilizzarla **_solo ed esclusivamente_** per le risorse che ne hanno necessità, ovver oquelle non condivisibili.
+Nel caso di **mutua esclusione** un modo per prevenire i _deadlock_ è utilizzarla **_solo ed esclusivamente_** per le risorse che ne hanno necessità, ovvero quelle non condivisibili.
 
 Per ovviare ai _deadlock_ della **hold and wait** dobbiamo garantire che quando un processo richiede una risorsa, **_non ne possegga già un altra_**.
 Possiamo quindi obbligare il processo a richiedere e allocare tutte le risorse prima che inizi l'esecuzione. Oppure potremmo permettergli di richiedere le risorse **_solo quando non ne ha altre_**.
-Il fatto stesso di utilizzare poche risorse comporta un'alta probabilità di starvartion
+È importante tenere a mente che il fatto stesso di utilizzare poche risorse comporta un'alta probabilità di _starvartion_.
 
 Nel caso di sistemi _non preemptivi_ se un processo che ha il possesso di una risorsa ne richiede un altra che non può essergli immediatamente allocata, allora **_tutte le risorse che trattiene vengolno rilasciate_**. Le risorse vengono quindi tutte messe in una lista sul quale il processo andrà in attesa. Il processo verrà ripreso solo quando potrà recuperare le vecchie risorse e quelle nuove.
 
@@ -783,16 +804,18 @@ Le tecniche per poter evitare i deadlock, dette tecniche di _deadlock avoidance_
 
 Il modello più semplice e più efficace è quello nel quale ogni processo dichiara **_il numero massimo di risorse di ogni tipo_** che può necessitare.
 
-Un altra opzione è l'algoritmo di _deadlock-avoidance_ che esamina dinamicamente lo stato dell'allocazione delle risorse affinché non si abbia mai una condizione attesa circolare.
+Un altra opzione è l'algoritmo di _deadlock-avoidance_ che esamina dinamicamente lo stato dell'allocazione delle risorse affinché non si abbia mai una condizione di attesa circolare.
 
-Lo stato dell'allocazione dele risorse è definito **_dalla somma delle risorse disponibili e quelle già allocate_** e dalla **_massima domanda di risorse del processo_**.
+Lo stato dell'allocazione delle risorse è definito da:
+- **_La somma delle risorse disponibili e di quelle già allocate_**
+- **_La massima domanda di risorse del processo_**.
 
 Questo comporta che quando un processo richiede una risorsa, il sistema debba decidere se l'allocazione di quella risorsa mantiene il sistema in uno **_stato sicuro_**.
 
 Si dice **_stato sicuro_**:
-> Un sistema nel quale esiste una sequenza $<P_1, P_2,...,P_n>$ di **_tutti i processi nel sistema_** tali che _per ogni $P_i$ le risorse che $P_i$ può richiedere possono essere soddisfatte con_:
-> -  **le risorse attualmente disponibili**
-> - **Le risorse utilizzate da tutti i processi $P_j \quad \wedge \quad j < i$
+> Un sistema nel quale esiste una sequenza &lt;$P_1, P_2,...,P_n$&gt; di **_tutti i processi nel sistema_** tali che _per ogni $P_i$ le risorse che $P_i$ può richiedere possono essere soddisfatte con_:
+> - **Le risorse attualmente disponibili**
+> - **Le risorse utilizzate da tutti i processi** $P_j \;(j < i)$
 
 Questo comporta che se le richieste di $P_i$ non fossero disponibili immediatamente, $P_i$ deve essere messo in attesa finché il processo che lo precede nella sequenza $P_{i-1}$ non è terminato. Quando $P_{i-1}$ sarà terminato, allora $P_i$ può ottenere le risorse richieste, eseguire e renderle nuovamente disponibili. Quando $P_i$ terminetà allora $P_{i+1}$ potrà ottenere le risorse a lui necessarie e così via...
 
@@ -807,25 +830,25 @@ Nel caso invece di risorse in _multiple instance_ si utilizza l'**_algoritmo del
 
 Definiamo **_claim edge_** una relazione $P_i \to R_j$ che indica che il processo $P_j$ possa richiedere la risorsa $R_j$, e lo indichiamo come una **_linea tretteggiata_**.
 
-Gli _claim edge_ si trasformano in _archi di attesa_ con quando un processo richiede una risorsa, che a sua volta diventano _archi di possesso_ quando la risorsa viene allocata al processo.
+I _claim edge_ si trasformano in _archi di attesa_ con quando un processo richiede una risorsa, che a sua volta diventano _archi di possesso_ quando la risorsa viene allocata al processo.
 Quando una risorsa viene rilasciata, un _arco di possesso_ ritorna un _claim edge_.
 
-La risorsa deve essere richiesta **_a apriori_** dal sistema.
+La risorsa deve essere richiesta **_a priori_** dal sistema.
 
 La regola diventa quindi la seguente:
 > Una richiesta può essere garantita **solo se** la conversione di un _arco di attesa_ in un _arco di possesso_ non risulta nella formazione di un ciclo nel grafo
 
 ### 4.4.2. Algoritmo del Banchiere
 
-Permette la _deadlock avoidance_ nel caso di risorse ocn multiple istanze.
+Permette la _deadlock avoidance_ nel caso di risorse con multiple istanze.
 
-Affinché possa funzionare richiede che **_ogni processo dichiari a priori il massimo utilizzo di una risorsa che potrà effettuare_**.
+Affinchél'algoritmo possa funzionare richiede che **_ogni processo dichiari a priori il massimo utilizzo di una risorsa che potrà effettuare_**.
 
-L'algoritmo sfrutta la possibilià di mettere in attesa un processo quando effettua una richiesta, e si basa sull'assunzione che quando un processo ottiene tutte le risorse, **_deve rilasciarle in un tempo finito_**.
+L'algoritmo sfrutta infatti la possibilità di mettere in attesa un processo quando questo effettua una richiesta, e si basa sull'assunzione che quando un processo ottiene tutte le risorse, **_dovrà rilasciarle in un tempo finito_**.
 
-Per spiegarlo immaginiamo di avere `n` processi e `m` risorse diverse.
+Per spiegarlo immaginiamo di avere $n$ processi e $m$ risorse diverse.
 
-Definiamo quindi:
+Definiamo quindi le seguenti strutture dati:
 - `available`: un array di lunghezza $m$. `available[j] = k` indica che vi sono $k$ istanze disponibili della risorsa $R_j$
 - `max`: una matrice $n\times m$. `max[i][j] = k` indica che il processo $P_i$ può richiedere **_al massimo_** $k$ istanze della risorsa $R_j$
 - `allocation`: una matrice $n\times m$. `allocation[i][j] = k` indica che il processo $P_i$ possiede $k$ istanze di $R_j$
@@ -877,9 +900,9 @@ L'algoritmo di verifica dello stato sicuro è qualcosa del genere:
 ```cpp
 bool isSafe(){
 	// step 1
-	int *work = copyArray(available);
+	int* work = copyArray(available);
 	bool* finish = initAll(false);
-	
+
 	int i;
 	bool skipToFour;
 	do{
@@ -892,7 +915,7 @@ bool isSafe(){
 				break;
 			}
 		}
-	
+
 		if(!skipToFour){
 			// step 3
 			sumByElement(work, allocation[i], false);
@@ -912,12 +935,12 @@ bool isSafe(){
 L'algoritmo di richiesta di una risorsa di un processo `i` diventa quindi:
 ```cpp
 void bankerAlgorithm(int i){
-	if(!compareRow([request[i], need[i]])){
+	if(!compareRow(request[i], need[i])){
 		throw new Exception("Il processo ha richiesto più di quanto aveva detto avrebbe fatto");
 	}
 
 	if(compareRow(request[i], available)){
-		// nessuna risorsa disponibile
+		// Almeno una delle risorse non è disponibile
 		wait();
 	}
 
@@ -925,7 +948,7 @@ void bankerAlgorithm(int i){
 		sumByElement(available, request[i], true);
 		sumByElement(allocation[i], request[i], false);
 		sumByElement(need[i], request[i], true);
-	
+
 		if(!isSafe()){
 			// oggetto allocato
 			return;
@@ -959,9 +982,9 @@ Al tempo $t_0$ la situazione è la seguente:
 
 Al tempo $t_0$ `available = {3, 3, 2}`.
 
-Possiamo constatare che la sequenza $<P_1, P_3, P_4, P_2, P_0>$ soddisfa il criterio di sicurezza, quindi il sistema è in uno **_stato sicuro_**.
+Eseguendo l'algoritmo possiamo constatare che la sequenza &lt;$P_1, P_3, P_4, P_2, P_0$&gt; soddisfa il criterio di sicurezza, quindi il sistema è in uno **_stato sicuro_**.
 
-Se $P_1$ richiedesse `{1, 0, 2}` possiamo verificare che questa richiesta è garantibile in quanto `(1, 0, 2) <= (3, 3, 2)`.. Trasformando lo stato totale in:
+Se $P_1$ richiedesse `{1, 0, 2}` (richiesta garantibile in quanto `{1, 0, 2} <= {3, 3, 2}`)trasformerebbe lo stato totale in:
 
 <div class="flexbox" markdown="1">
 
@@ -977,9 +1000,10 @@ Se $P_1$ richiedesse `{1, 0, 2}` possiamo verificare che questa richiesta è gar
 
 Con `available = {2, 3, 0}`.
 
-In questo stato, ad esempio, se $P_4$ richiedesse `(3,3,0)` la richiesta **_non sarebbe accettata_**, in quanto le risorse che richiede non sono disponibili. Questo comporta che $P_4$ andrà in attesa.
+In questo stato, ad esempio, se $P_4$ richiedesse `{3, 3, 0}` la richiesta **_non sarebbe accettata_**, in quanto le risorse che richiede non sono disponibili. Questo comporta che $P_4$ andrà in attesa.
 
-Allo stesso modo la richiesta da parte di $P_0$ di `(0, 2, 0)` **_non sarebbe accettata_**. Le risorse stavolta sono disponibili, ma eseguendo l'algoritmo `isSafe()` sullo stato aggiornato, risulta che non esiste la sequenza di algoritmi che permette di mantiene il _safe state_. Quindi anche $P_0$ andrà in attesa.
+Allo stesso modo la richiesta da parte di $P_0$ di `{0, 2, 0}` **_non sarebbe accettata_**.
+In questo caso è vero che le risorse sono disponibili, ma eseguendo l'algoritmo `isSafe()` sullo stato aggiornato, è immediato verificare che non esiste sequenza di algoritmi che permette di mantiene il _safe state_. Quindi anche $P_0$ andrà in attesa.
 
 
 ## 4.5. Dealock Detection
@@ -1009,18 +1033,18 @@ Sulla sinistra abbiamo il grafo dell'allocazione risorse, sulla destra il corris
 
 In caso di risorse con istanze multiple introduciamo delle nuove variabili:
 - `available`: vettore di lunghezza $m$, indica il numero di istanze disponibili per ogni risorsa
-- `allocation`: matrice di dimensioni $n \times m$, indica per ogni risorsa il numero di istanze attualmente allocate ad ogni processo
+- `allocation`: matrice di dimensioni $n \times m$, per ogni processo indica il numero di istanze attualmente allocate per ogni risorsa.
 - `request`: matrice di dimensioni $n \times m$, indica per ogni risorsa il numero di risorse richieste per ogni processo. Se `request[i][j] = k` indica che il processo $P_i$ sta richiedendo altre `k` istanze della risorsa $R_j$
 
 Un esempio di _detection algorithm_ (ipotizzando di avere le solite [_funzioni di supporto_](#support-function)):
 ```cpp
 bool* isInDeadlock(){
 	bool* deadlock_array = initAll(false);
-	
+
 	// step 1
 	int* work = copyArray(available);
 	bool* finish = initAll(true);
-	
+
 	for(int i = 0; i < n; ++i){
 		for(int j = 0; j < m; ++j){
 			if(allocation[i][j] != 0){
@@ -1029,29 +1053,29 @@ bool* isInDeadlock(){
 			}
 		}
 	}
-	
+
 	// step 2
 	int i;
 	bool skipToFour;
-	
+
 	do{
 		i = 0;
 		skipToFour = true;
-	
+
 		for(; i < n; ++i){
 			if(!finish[i] && compareRow(request[i], work)){
-				skipToFour = true;
+				skipToFour = false;
 				break;
 			}
 		}
-	
+
 		// step 3
 		if(!skipToFour){
 			work = sumByElement(work, allocation[i], false);
 			finish[i] = true;
 		}
 	}while(!skipToFour);
-	
+
 	// spet 4
 	for(int i = 0; i < n; ++i){
 		deadlock_array[i] = !finish[i];
@@ -1082,7 +1106,7 @@ Al tempo $t_0$ la situazione è la seguente:
 
 Al tempo $t_0$ `available = {0, 0, 0}`.
 
-Eseguendo l'algoritmo otteniamo che attraverso la sequenza $<P_0, P_2, P_3, P_1, P_4>$ otteniamo che per tutti i processi `finish[i] = true`.
+Eseguendo l'algoritmo otteniamo che attraverso la sequenza &lt;$P_0, P_2, P_3, P_1, P_4$&gt; otteniamo che per tutti i processi `finish[i] = true`.
 
 Immaginiamo però che $P_2$ effettui una nuova richiesta di risorsa:
 
@@ -1100,26 +1124,26 @@ Immaginiamo però che $P_2$ effettui una nuova richiesta di risorsa:
 
 A questo punto, eseguendo l'algoritmo, il processo $P_0$ termina senza problemi, ma le risorse che rilascia **non sono sufficienti a per soddisfare le richieste delgi altri**.
 
-L'algoritmo trova quindi un _deadlock_, ni particolare gli indici ancora `true` (e quindi il ciclo) è nei procsssi $P_1, P_2, P_3, P_4$.
+L'algoritmo trova quindi un _deadlock_, in particolare gli indici ancora `true` (e quindi il ciclo) è nei procsssi $P_1, P_2, P_3, P_4$.
 
 ### 4.5.3. Utilizzo degli algoritmi
 
 Questi algoritmi possono essere eseguiti in qualsiasi momento da parte del nostro sistema. Tuttavia, entrambi gli algoritmi producono notevole _overhead_. Una buona programmazione dovrebbe quindi eseguirlo **_il numero minimo di volte_**.
 
-Infatti, nonostante abbia senso eseguirli ogni volta che un processo richiede una risorsa, questo introdurrebbe tantissimo _overhead_.
+Infatti, nonostante abbia senso eseguirli ogni volta che un processo richiede una risorsa, in pratica non sarebbe sostenibile.
 Inolte, sapendo che la probabilità di _deadlock_ è notevolmente bassa, rischiremmo di eseguire l'algoritmo quasi sempre "senza motivo".
 
-Un metodo per migliorare l'efficienza del sistema potrebbe essere introdurre un _monitor_ sulla **CPU**, in modo che l'algoritmo venga eseguito qual'ora l'utilizzo della **CPU** sia sotto una certa soglia, ad esempio il $30\%$
+Un metodo per migliorare l'efficienza del sistema potrebbe però essere introdurre un _monitor_ sulla **CPU**, in modo che l'algoritmo venga eseguito qual'ora l'utilizzo della **CPU** sia sotto una certa soglia, ad esempio il $30\%$.
 
 Una via intermedia potrebbe inoltre essere quella di eseguire questi algoritmi **periodicamente**. Attraverso lo studio con dei _testbench_ è possibile stimare il rischio di _deadlock_ in relazione al tempo, così da poter eseguire l'algoritmo solo nei momenti dove è statisticamente probabile che il _deadlock_ sia realmente avvenuto.
 
-Un altra soluzione intermedia può essere quella di eseguire gli algoritmi **_ogni volta che uan richiesta non può essere soddisfatta_**.
+Un altra soluzione intermedia può essere quella di eseguire gli algoritmi **_ogni volta che una richiesta non può essere soddisfatta_**.
 
 ### 4.5.4. Recovery
 
 Una volta rilevato il _deadlock_, dobbiamo decidere come fare per ripristinare il sistema.
 
-Un metodo sicuramente funzionante è quello di **_abortire tutti i processi in deadlock_**. Questa soluzione, seppur semplice è efficace, è estremamente drastica e non strettamente necessaria.
+Un metodo sicuramente funzionante è quello di **_abortire tutti i processi in deadlock_**. Questa soluzione, seppur semplice è efficace, è estremamente drastica e non sempre strettamente necessaria.
 
 Un metodo più "tranquillo" è quello di **_abortire un processo alla volta_** finché non riusciamo a eliminare il ciclo.
 
@@ -1133,6 +1157,6 @@ Esistono quindi tanti criteri attraverso i quali scegliere l'ordine con il quale
 
 In generale dobbiamo **selezionare una vittima** in modo di minimizzare il costo.
 
-Questa azione si chiama _rollback_, e permette di tornare al _safe state_. SUccessivamente il processo abortito ripartirà da zero.
+Questa azione si chiama _rollback_, e permette di tornare al _safe state_, dal quale il processo abortito ripartirà da zero.
 
-Questa scelta può provocare _starvation_, infatti potremmo scegliere come vittima **_sempre lo stesso processo_**. Per evitarla potremmo prendere in considerazione anche il numero di _rollback_ nella scelta della vittima.
+Questa scelta può provocare _starvation_, infatti potremmo scegliere come vittima **_sempre lo stesso processo_**, ma è facilmente evitabile, prendendo ad esempio in considerazione anche il numero di _rollback_ già effettuati per un dato processo quando scegliamo la vittima.
