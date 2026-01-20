@@ -38,7 +38,7 @@ Esistono diversi caratteri speciali:
 
 ## 2.1. Shell
 
-È un interprete dei ocmandi che consente all'utente di richiedere informazioni e servizi al sistema operativo.
+È un interprete dei comandi che consente all'utente di richiedere informazioni e servizi al sistema operativo.
 Ne esistono di due tipi:
 - **Shell grafica** (_GUI_): più intuitiva e facile dausare
 - **Shell Testuale** (_CLI_): più efficace se ci conoscono bene i comandi
@@ -47,17 +47,20 @@ Noi utilizzeremo la **shell testuale**. In questa shell:
 - Viene mostrato un prompt
 - Si legge il comando digitato dall'utente terminato con `\r\n`
 - Viene eseguito il comando
-  - Se non è in grado di completarlo segnala un'errore
+  - Se non si è in grado di completarlo si segnala un'errore
   - Il comando viene completato e si reinizia il ciclo
 
 In `bash` il prompt ha questa forma:
 ```bash
 username@host:directoryAttuale$
 # Il dollaro compare solo se si è utente semplice
-# Per utente di root si ha il `#`
+# Per utente di root si ha il carattere `#`
 ```
 
-Per effettuare il logout dalla shell testuale si può utilizzare la combinazione `Ctrl+D`
+Per effettuare il logout dalla shell testuale si può utilizzare la combinazione `Ctrl+D` o utilizzare il comando:
+```bash
+exit
+```
 
 Alcune funzioni utili sono:
 - Autocompletamento con il tasto `TAB`
@@ -74,12 +77,12 @@ sudo shutdown -r now		# Riavviare il sistema
 Per cambiare directory:
 ```bash
 cd /lib		# Path assoluto
-cd ./lib	# Path relativo (dobbiamo essere sicuri che `/var/lib`)
-cd ..		# Torno indietro
+cd ./lib	# Path relativo, lo elabora dalla locazione attuale
+cd ..		# Torno indietro (tranne se già nella cartella di root `/`)
 cd 			# Torno a `~` (va bene anche `cd ~`)
 ```
 
-Per ottenere il percorso assoluto della directory corrente:
+Per ottenere il percorso assoluto della directory corrente si può utilizzare il comando:
 ```bash
 pwd
 ```
@@ -90,30 +93,30 @@ ls						# directory corrente
 ls qualche_directory	# contenuto di qualche_directory
 ```
 
-Spesso quello che stampa sono di colore diversi. Lo standard per shell bash:
+La maggior parte delle shell utilizza colori diversi per elencare diversi tipi di file. Lo standard per shell bash:
 - **Blu**: cartelle
 - **Bianco**: file
 - **Verde**: eseguibili
+- **Azzurro**: link
 
-Il comando `ls` permette alcune opzioni (che possono essee concatenate):
-- `-l` mostra più dettagli dei file
-- `-a` mostra tutti i file, anche quelli nascosti (su sistemi `UNIX` sono quelli che )
+Il comando `ls` permette alcune opzioni (che possono essere concatenate):
+- `-l` mostra più dettagli sui file
+- `-a` mostra tutti i file, anche quelli nascosti (su sistemi `UNIX` sono quelli che iniziano con il carattere `.`)
 - `-lH` mostra più dettagli e scrive le dimensioni in maniera _human readable_
 - `-ll`: equivalente a `-la`
 
-Per indicare i path è possibile utilizzare delle _wildcards_, che sono caratteri _regex_ che permettono di generalizzare la ricerca:
+Per indicare i path è possibile utilizzare delle _wildcards_, ovvero caratteri _regex_ che permettono di generalizzare la ricerca:
 - `*` sostituisce zero o più caratteri
 - `?` sostituisce un carattere
 - `[a,b,c]`: sostituisce un carattere con quelli specificati
 - `[a-z]`: sostituisce un carattere con quello nel range `a-z`
-
 
 Per visualizzare il funzionamente di un comando:
 ```bash
 man nome_comando
 ```
 
-È diviso in sezioni, e funziona per:
+Il manuale è diviso in sezioni, e funziona per:
 1. Comandi
 2. Funzioni del kernel
 3. Funzioni delle librerie C
@@ -121,27 +124,25 @@ man nome_comando
 
 Se ci sono ambiguità si utilizza l'indice numerico:
 ```bash
-man printf			# comando
+man printf			# comando bash
 man 3 printf		# funzione C
 ```
 
 Per visualizzare la descrizione breve di una pagina del manuale si può utilizzare `whatis`.
 
-Per gestire le directory:
+Per gestire file (`file`) e directory (`dir`):
 ```bash
 mkdir nome_cartella			# crea una directory
 rmdir nome_cartella			# elimina una directory SOLO SE vuota
 
-cp src dst					# copia src in dst
-cp src1 src2 ... dst_dir 	# copia src1, src2, ... in nella directory dst_dir
+cp file dst					# copia file in dst
+cp file1 file2 ... dst_dir 	# copia file1, file2, ... nella directory dst_dir
+cp -r dir1 dir2 ... dst_dir # copia le directory dir1, dir2, ... nella directory dst_dir
 
-mv src dst					# sposta src in dst se directory, altrimenti lo rinomina
+mv src dst					# sposta src in dst se esiste come directory, altrimenti lo rinomina
 mv src1 src2 ... dst_dir	# sposta src1, src2, ... in nella directory dst_dir
-```
 
-Per gestire i file:
-```bash
-touch file					# Aggiorna il timestamp di accesso e modifica di un file. Se non esiste lo crea
+touch file					# Aggiorna il timestamp di accesso e modifica di un file. Se il file non esiste lo crea
 
 cat file1 file2 ...			# Concatena il contenuto di più file e lo stampa nello standard output
 
@@ -160,7 +161,7 @@ tail						# Mostra l'ultima parte di uno o più file
 ## 2.2. Redirizione di IO
 
 I processi hanno tre canali di input/output standard:
-- `stdin`: input da stastier
+- `stdin`: input da tastiera
 - `stdout`: output su schermo
 - `stderr`: messaggi di errore su schermo
 
@@ -194,7 +195,7 @@ Per collegare l'output di un comando all'input del successivo si utilizza l'oepr
 ```bash
 ls -l mydir | less
 
-cat *.txt | sort > resutl-file
+cat *.txt | sort > result-file.txt
 ```
 
 
@@ -218,7 +219,7 @@ Questo comando può essere utilizzato solo da utenti nel gruppo `sudoers` (li pr
 
 # 3. Comandi `vi`
 
-Ecco un lista di comandi per l'editor di testo da terminale `vi`:
+Ecco un lista di comandi per l'editor di testo da terminale `vi`/`vim`:
 
 <div class="flexbox" markdown="1">
 
@@ -234,9 +235,9 @@ Ecco un lista di comandi per l'editor di testo da terminale `vi`:
 |    `dd`     | Cancella la riga corrente                                                |
 |    `ndd`    | Cancella `n` righe a partire da quella corrente                          |
 |    `yy`     | Copia una riga                                                           |
-|    `nyy`    | Copia 'n` righe a partire da quella corrente                             |
-|     `p`     | Incolla la selezione nella riga sotto il vursore                         |
-|   `/word`   | Ricerca nel testo la parola word                                         |
+|    `nyy`    | Copia `n` righe a partire da quella corrente                             |
+|     `p`     | Incolla la selezione nella riga sotto il cursore                         |
+|   `/word`   | Ricerca nel testo la parola `word`                                       |
 |     `n`     | Si posizione sull'occorenza successiva (nella ricerca)                   |
 |     `N`     | Si posizione sull'occorenza precedente (nella ricerca)                   |
 |    `:q`     | Esce (se non si sono fatte modifiche)                                    |
@@ -255,7 +256,7 @@ Questo comando permette di trovare file e cartelle all'interno del sistema.
 
 Utilizza una sistassi relativamente complessa, ma questo gli permette di effettuare la ricerca combinando dei test sulle proprietà dei file, che siano _filename_, _file type_, _owner_, _permessi_, _timestamp_,...
 
-È importante evidenziare che òa ricerca **non è influenzata dal contenuto del file**.
+È importante evidenziare che la ricerca **non è influenzata dal contenuto del file**.
 
 Il comando `find` permette di eseguire delle _actions_ (comandi) sui file trovati.
 
@@ -273,10 +274,10 @@ Le espressioni sono composte da una sequenza di elementi:
 - **Opzioni posizionali**: influenziano solo le azioni o i test che seguono, ritornando sempre `true`
 
 
-Se gli elementi di una espressioni sono collegati da **operatori**. Ad esempio `-o` indica `OR` e `-a` indica `AND`. In caso non siano specificati operatori, l'utilizzo dell'operatore `AND` è **implicito per collegare due espressioni**. Per negare una espressione il carattere `!` rappresnenta il `NOT`.
+Gli elementi di una espressioni sono collegati da **operatori**, ad esempio `-o` indica `OR` e `-a` indica `AND`. In caso non siano specificati operatori, l'utilizzo dell'operatore `AND` è **implicito per collegare due espressioni**. Per negare una espressione il carattere `!` rappresenta il `NOT`.
 
 Vediamo alcuni **_test_**  di utilizzo:
-- `find . -name pattern`: ricerca basata sul nome del file. Il patterno può includere i metacaratteri oppure le parentesi. In caso di evitare l'espansione di questi metacaratteri (ad esempio `*`) è neccesario scriverli tra apici.
+- `find . -name pattern`: ricerca basata sul nome del file. Il pattern può includere i metacaratteri oppure le parentesi e, per evitarne l'espansione, è neccesario scriverli tra apici.
 - `find . -type dfl`: ricerca basata sul **tipo di file**. `d` indica le _directory_, `f` i _regular files_ e `l` i _symbolic link_
 - `find . -size [+-]n[ckMG]`: permette di effettuare ricerche basate sulla dimensione del file. Il prefisso `[+-]` indica se il file deve essere maggiore o minore della dimensione specificata. `n` indica la dimensione e `[ckMG]` indica l'unità di misura utilizzata. In ordine `byte`, `kilobyte`, `megabyte` e `gigabyte`
 - `find . -user utente`: si cercano i file appartenenti ad un `utente` come `UID` o come `username`
@@ -284,11 +285,19 @@ Vediamo alcuni **_test_**  di utilizzo:
 - `find . -perm [-/] mode`: si cercano i file a seconda dei permessi del file:
   - `mode`: i permessi devono essere **esattamente** quelli specificati
   - `-mode`: almeno i permessi indicati devono essere presenti
-  - `/mode`: almeno  uno dei permessi indicati deve essere presente
+  - `/mode`: almeno uno dei permessi indicati deve essere presente
 
 Prima di vedere le **_azioni_**, è importante sottolineare che questi comandi vanno inseriti **dopo i test**, altrimenti avranno effetto su tutti i file:
 - `-delete`: elimina i file trovati. Ritorna `true` in caso di successo
-- `-exec command ;`: esegue il comando specificato sul file considerato se ha superato i test precedenti. Tutti gli argomenti specificati dopo `command` vengono considerati come _argomenti del comando_, fino al carattere `;`. La stringa `{}` è utilizzata per **specificare il nome del file attualmente processato**. Il comando viene eseguito a partire dal _percorso di partenza_.
+- `-exec command \;`: esegue il comando `command` specificato sui file trovati. Tutti gli argomenti specificati dopo `command` vengono considerati come _argomenti del comando_, fino al carattere `\;`. La stringa `{}` è utilizzata per **specificare il nome del file attualmente processato**. Il comando viene eseguito a partire dal _percorso di partenza_.
+
+Un esempio di `find` che:
+- Cerca i file che hanno dimensione di almeno 10MB con permessi di scrittura per il proprietario che appartengono all'utente `pippo`
+- Inserisce la lista dei percorsi in un file `list.txt`
+
+```bash
+find . -size 10M -perm -u=w -user pippo -exec echo {} >> list.txt \;
+```
 
 ## 4.2. Locate
 
@@ -317,7 +326,7 @@ Se si vuole specificare più di un modello si deve utilizzare `-e` prima di cias
 | Opzione |                    Significato                    |
 | :-----: | :-----------------------------------------------: |
 |  `-i`   | Ignora le distininzioni tra minuscole e maiuscole |
-|  `-v`   | Mostra le linee che non contengolo l'espressione  |
+|  `-v`   | Mostra le linee che non contengono l'espressione  |
 |  `-n`   |             Mostra il numero di linea             |
 |  `-c`   |   Riporta solo in conteggio delle linee trovate   |
 |  `-w`   |             Trova solo parole intere              |
@@ -341,7 +350,7 @@ Il comando `tar` (_Tape ARchive_) permette di archiviare/estrarre una raccolta d
 ```bash
 tar modalità[opzioni] [file1...]
 ```
-La modalità dpecifica il modo in cui il comando deve operare, le opzioni permettono di fornire ulteriori dettagli sul comportamento tecnica di compressione (nome dell'archivio, ...)
+La modalità specifica il modo in cui il comando deve operare, le opzioni permettono di fornire ulteriori dettagli sul comportamento tecnica di compressione (nome dell'archivio, ...)
 
 La lista di file/cartelle indica quali devono essere archiviati o estratti
 
@@ -354,16 +363,17 @@ Subito dopo il comando `tar` deve essere specificata la modalità:
 
 <div class="flexbox" markdown="1">
 
-| Simbolo Modalità | Significato                                                                                 |
-| :--------------: | :------------------------------------------------------------------------------------------ |
-|       `A`        | Aggiunge file `.tar` all'archivio                                                           |
-|       `c`        | Crea un nuovo archivio                                                                      |
-|       `d`        | Trova le differenze tra l'archivio e il _filesystem_                                        |
-|    `--delete`    | Cancella un file all'archivio                                                               |
-|       `r`        | Aggiunge un file all'archivio                                                               |
-|       `t`        | Elenca i file di un archivio                                                                |
-|       `U`        | Aggiunge gile all'archiivio, ma solo se differiscono dalla copia eventualmente già presente |
-|       `x`        | Estrae i file dall'archivio                                                                 |
+| Simbolo Modalità | Significato                                                                                    |
+| :--------------: | :--------------------------------------------------------------------------------------------- |
+|       `A`        | Aggiunge file `.tar` all'archivio                                                              |
+|       `c`        | Crea un nuovo archivio                                                                         |
+|       `d`        | Trova le differenze tra l'archivio e il _filesystem_                                           |
+|    `--delete`    | Cancella un file all'archivio                                                                  |
+|       `r`        | Aggiunge un file all'archivio                                                                  |
+|       `t`        | Elenca i file di un archivio                                                                   |
+|       `U`        | Aggiunge deu file all'archivio, ma solo se differiscono dalla copia eventualmente già presente |
+|       `x`        | Estrae i file dall'archivio                                                                    |
+
 </div>
 
 Le opzioni invece permettono di definire il modo in cui il comando deve operare:
@@ -381,9 +391,9 @@ Le opzioni invece permettono di definire il modo in cui il comando deve operare:
 
 Alcuni esempi:
 ```bash
-tar cvf archivio.tar percorso     	# crea un archivio di nome `archivio.tar` con l contenuto `percorso` in modalità verbose
+tar cvf archivio.tar percorso     	# crea un archivio di nome `archivio.tar` con il contenuto `percorso` in modalità verbose
 
-tar czf archivio.tar.gz percorso  	# crea un archivio compresso di nome `archivio.tar.gz` con l contenuto `percorso`
+tar czf archivio.tar.gz percorso  	# crea un archivio compresso di nome `archivio.tar.gz` con il contenuto `percorso`
 
 tar tf archivio.tar             	# mostra il contenuto dell'archivio `archivio.tar`
 
