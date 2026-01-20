@@ -733,7 +733,7 @@ Per avere _deadlock_ **_sono necessarie quattro condizioni che si verificano sim
 - **Mutua Esclusione**: solo un processo per volta può usare una risorsa
 - **Hold and Wait**: un processo che trattiene almeno una risorsa sta attendendo altre risorse attualmente trattenute da altri processi
 - **No preemption**: una risorsa può essere rilasciata _solo volontariamente_ dal processo che la sta trattenendo dopo che questo ha terminato il task
-- **Attesa Circolare**: esiste un set $\bigl\{P_0, P_1, ..., P_n\bigr\}$ di processi in attesa dove
+- **Attesa Circolare**: esiste un set &lt;$P_0, P_1, ..., P_n\$&gt; di processi in attesa dove
   - $\forall i \in [0, n-1]$ il processo $P_i$ sta attendendo una risorsa trattenuta da $P_{i+1}$
   - $P_n$ attende la risorsa trattenuta da $P_0$
 
