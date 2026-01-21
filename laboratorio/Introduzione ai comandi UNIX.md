@@ -371,7 +371,7 @@ Subito dopo il comando `tar` deve essere specificata la modalità:
 |    `--delete`    | Cancella un file all'archivio                                                                  |
 |       `r`        | Aggiunge un file all'archivio                                                                  |
 |       `t`        | Elenca i file di un archivio                                                                   |
-|       `U`        | Aggiunge deu file all'archivio, ma solo se differiscono dalla copia eventualmente già presente |
+|       `U`        | Aggiunge due file all'archivio, ma solo se differiscono dalla copia eventualmente già presente |
 |       `x`        | Estrae i file dall'archivio                                                                    |
 
 </div>
@@ -403,7 +403,7 @@ tar xvf archivio.tar file     		# estrae `file` da `archivio.tar` in modalità v
 Se si devono comprimere file o archivi creati precedentemente con tar possiamo utilizzare:
 ```bash
 gzip file1 file2				# comprime e salva i file con lo stesso nome e estensione `.gz` senza eliminare gli originali
-gunzip file1.gz file2.gz		# estraei file compressi in file con lo stesso nome (senza estensione della compressione). Gli origniali vengono eliminati
+gunzip file1.gz file2.gz		# estrae i file compressi in file con lo stesso nome (senza estensione della compressione). Gli origniali vengono eliminati
 ```
 
 `bzip2` e `bunzip2` utilizzano la stessa sintassi ma utilizzano l'algoritmo `bzip2`
