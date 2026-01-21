@@ -111,8 +111,8 @@ chmod go-rwx file.txt	  # toglie tutti i permessi di accesso a `file` a GROUP OW
 ```
 
 Oltre a questi permessi, ne esistono altri due "speciali" che vengono acquisiti durante l'esecuzione:
-- `SUID`: il processo acquisisce i privilegi dell'**owner**. Tipicamente un processo acquisisce i privilegi di chi lo esegue.
-- `SGID`: il processo acquisisce i privilegi del **group owner**. Tipicamente un processo acquisisce i privilegi del gruppo di chi lo esegue.
+- `SUID`: il processo acquisisce i privilegi dell'**owner** invece di quelli di chi lo esegue.
+- `SGID`: il processo acquisisce i privilegi del **group owner** invece di quelli del gruppo di chi lo esegue.
 
 Per rappresentare questi permessi aggiuntivi si utilizzano le seguenti sintassi:
 - `SUID`: invece del **permesso di esecuzione dell'OWNER** `x` si utilizza il permesso di **esecuzione con `SUID`** `s`
@@ -151,7 +151,7 @@ Le informazioni degli utenti sono contenute in due file:
 
 Analizzando questi file possiamo notare l'esistenza di numerosi **utenti di servizio**. Questi utenti sono generati dalle singole applicazioni, e vengono utilizzati per permettere loro di agire come tali. In particolare però, possiamo notare come queste non abbiano però l'utilizzo di `/bin/bash`, non permettendo loro di aprire una shell.
 
-Il formato utilizzato per un utente è il seguente: 
+Il formato utilizzato per un utente è il seguente:
 ```passwd
   username:password:UID:GID:info,aggiuntive,separate:homeDir:shellDir
 ```
@@ -219,12 +219,12 @@ newgrp gruppo
 ```
 
 
-Le informazioni pubbliche sui gruppi si trovano in `/etc/group`. In questo file, apribile con il comando `vigr` si trovano _record_ con il seguente formato: 
+Le informazioni pubbliche sui gruppi si trovano in `/etc/group`. In questo file, apribile con il comando `vigr` si trovano _record_ con il seguente formato:
 ```group
 	groupName:password:GID:lista,utenti,del,gruppo
 ```
 
-Anche in questo caso la password, se presente, è **cifrata** e indicata con una `x`. La password si trova, insieme agli admin, in  `/etc/gshadow`. Questo file è apribile con `vigr -s` e contiene _record_: 
+Anche in questo caso la password, se presente, è **cifrata** e indicata con una `x`. La password si trova, insieme agli admin, in  `/etc/gshadow`. Questo file è apribile con `vigr -s` e contiene _record_:
 ```gshadow
 	groupName:pwd_cifrata:GID:admin1,admin2,admin3:membro1,membro2,membro3
 ```

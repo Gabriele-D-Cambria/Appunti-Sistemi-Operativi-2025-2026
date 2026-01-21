@@ -10,7 +10,7 @@ title: Thread
 	- [3.1. Mutua esclusione](#31-mutua-esclusione)
 	- [3.2. Sincronizzazione](#32-sincronizzazione)
 		- [3.2.1. `wait`, `signal` e `broadcast`](#321-wait-signal-e-broadcast)
-		- [Esempi](#esempi)
+		- [3.2.2. Esempi](#322-esempi)
 
 
 # 2. Thread
@@ -19,7 +19,7 @@ Un thread è un flusso di esecuzione indipendente all'interno di un processo.
 
 Un singolo processo può avere più _thread_ associati, che condividono risorse e spazio di indirizzamento (o almeno parte di esso).
 
-I _thread_ sono anche detti "processi leggeti" in quanto la loro creazione/distruzione è meno onerosa rispetto a quella di un processo, così come l'onerosità cambio di contesto.
+I _thread_ sono anche detti "processi leggeri" in quanto le operazioni di creazione, distruzione e cambio contesto sono meno onerose rispetto a quelle di un processo.
 
 I _thread_ portano alcuni vantaggi, come **interazioni più semplici ed efficaci** e la **minore onerosità dei passaggi di contesto**.
 Tuttavia comportano anche altri svantaggi, in particolare è necessario gestire **la concorrenza fra thread**, dovendo scrivere codice _thread safe_ che non comporta _deadlock_.
@@ -31,7 +31,7 @@ Il processo tradizionale dei processi `UNIX` può essere visto come un _thread c
 
 Lo sandard `POSIX` definisce la libreria `pthreads` per la **programmazione di applicazioni multithreaded protabili**.
 
-Per poterla utilizzare è necessario includere la libreria `<pthread.h>` e compilare:
+Per poterla utilizzare è necessario includere la libreria `<pthread.h>` e compilare aggiungendola esplicitamente:
 ```bash
 gcc <options> file.c -l pthread		# alcuni compilatori non hanno bisogno della specifica
 
@@ -39,9 +39,12 @@ gcc <options> file.c -l pthread		# alcuni compilatori non hanno bisogno della sp
 gcc <options> file.c -l pthread -std=99
 ```
 
-Ed è possibile vedere la documentazione tramite `man pthreads`
+Ed è possibile vedere la documentazione tramite:
+```bash
+man pthreads
+```
 
-UN _thread_ è identificato da un _id_ di tipo `pthread_t`, ed è possibile recuperare l'id del thread conrrente:
+Un _thread_ è identificato da un _id_ di tipo `pthread_t` recuperabile tramile la primitiva:
 ```c
 pthread_t pthread_self(void)
 ```
@@ -53,15 +56,16 @@ Per confrontare due _id_ si utilizza:
 int pthread_equals(pthread_t tid1, pthread_t tid2);
 ```
 
-L'esecuzione di un programma determina la creazione di un primo thread che esegue il codice del main.
+L'esecuzione di un programma determina la creazione di un primo thread che esegue il codice del `main`.
 
-Il thread iniziale può generare una gerarchia di _thread_ utilizzare:
+Il thread iniziale può successivamente generare una gerarchia di _thread_ utilizzando:
 ```c
 /**
 * @param thread: puntatore ad identificatore di thread dove verrà scritto l'ID del thread creato
 * @param attr: attributi del thread, NULL per usare valori di default
 * @param start_routine: puntatore alla funzione che contiene il codice del nuovo thread
 * @param arg puntatore che viene passato come argomento a `start_routine`
+*
 * @returns `0` in assenza di errore, un valore diverso altrimenti
 */
 int pthread_create( pthread_t* thread,
@@ -74,15 +78,21 @@ Un _thread_ può terminare volontariamente la sua esecuzione con il comando:
 ```c
 /**
 * L'esecuzione del thread termina e il sistema libera le risorse allocate
-* Se un thread padre termina prima dei thread figli dopo aver chiamato questa funzione i figlio **continuano la loro esecuzione**. Altrimenti anche questi terminano.
+* Se un thread padre termina i figli **continuano la loro esecuzione**,
+* tranne quelli nello stato `zombie`, che terminano a loro volta.
+*
 * @param retaval valore di ritorno del thread consultabile da altri thread utilizzando la @ref `pthread_join`
 */
 void pthread_exit(void* retval);
 
 /**
 * Blocca un thread in attesa della terminazione di un thread specifico.
+*
 * @param thread ID del thread di cui attendere la terminazione
-* @param retval puntatore al puntatore dove verrà salvato l'indirizzo restituito dal thread con la @ref `pthread_exit`. Può essere impostato a `NULL` in caso volessimo ignorarlo.
+* @param retval puntatore al puntatore dove verrà salvato l'indirizzo restituito dal thread con la @ref `pthread_exit`.
+*				Può essere impostato a `NULL` in caso volessimo ignorarlo.
+*
+*
 * @returns `0` in caso di successo, altrimenti un codice di errore.
 */
 int pthread_join(pthread_t thread, void** retval);
@@ -165,21 +175,23 @@ Infatti nella libreria è definito il tipo `pthread_mutex_t` che rappresenta:
 - Lo stato del `mutex`
 - La coda dove verranno sospesi i processi in attesa che il `mutex` sia libero
 
-È un **_semaforo binario_**, quindi il suo stato può assumere due valore (libero o occupato):
+È un **_semaforo binario_**, quindi il suo stato può assumere due valori (libero o occupato):
 ```c
 // Definire una variabile mutex
 pthread_mutex_t M;
 
 /**
 * Permette di inizializzare la variabile mutex.
+*
 * @param M puntatore al mutex da inizializzare
 * @param mattr puntatore a una struttura con attributi di inizializzazione. Se `NULL` vengono utilizzati i valori di default (mutex libero)
+*
 * @returns
 */
 int pthread_mutex_init(pthread_mutex_t* M, const pthread_mutexattr_t* mattr);
 ```
 
-La `wait` e la `signal` sul mutex è realizzata con le primitive:
+La `wait` e la `signal` sul mutex sono realizzata con le primitive:
 ```c
 // Entrambe restituiscono `0` in caso di successo, altrimenti un codice di errore
 
@@ -187,9 +199,12 @@ int pthread_mutex_lock(pthread_mutex_t* M);
 int pthread_mutex_unlock(pthread_mutex_t* M);
 ```
 
-L'utilizzo è riassumibile in:
+Un classico utilizzo di un semaforo è il seguente:
 ```c
 pthread_mutex_t M;
+
+// ...
+
 pthread_mutex_init(&M, NULL);
 
 // Voglio utilizzare la risorsa
@@ -226,8 +241,8 @@ int pthread_cond_init(pthread_cond_t* C, pthread_cond_attr_t* attr);
 ```
 
 Un _thread_ può effettuare due "operazioni" su una _condition variable_:
-- **Sospendersi** (`wait`): dopo aver verifivato una determinata condizione si sospende in attesa di essere risvegliato da un altro _thread_
-- **Risvegliarsi** (`signal`/`broadcast`): può risvegliare uno solo (`signal`) o tutti (`broadcast`) i thread sospesi sulla _condition variable_
+- **Sospendersi** (`wait`): dopo aver verificato una determinata condizione, si sospende in attesa di essere risvegliato da un altro _thread_
+- **Risvegliarsi** (`signal`/`broadcast`): può risvegliare uno (`signal`) o tutti (`broadcast`) i thread sospesi sulla _condition variable_
 
 ### 3.2.1. `wait`, `signal` e `broadcast`
 
@@ -243,18 +258,19 @@ while(condizione_logica){
 }
 ```
 
-La `condizione_logica` è basata su una risorsa condivisa, quindi la sua verifica deve essere eseguita in _muta esclusione_.
+La `condizione_logica` è basata su una risorsa condivisa, quindi la sua verifica deve essere eseguita in _mutua esclusione_.
 
 Tenendo conto di questo aspetto, la primitiva di `wait` permette di **_associare una variabile mutex a una variabile condition_**.
 In questo modo il _lock_ della _mutua esclusione_ viene:
 - Automaticamente rilasciato quando il _thread_ si sospende sulla `wait`
 - Automaticamente preso quando il _thread_ viene risvegliato
 
-La primitiva wait quindi in realtà ha la seguente forma:
+Le primitive hanno quindi le seguenti forme:
 ```c
 /**
 * Sospende un thread nella coda associata a `C` e gestisce automaticamente
 * il lock sulla risorsa `M`
+*
 * @param C variable condition sulla quale sospendersi
 * @param M mutex associato alla condizione
 */
@@ -265,14 +281,16 @@ int pthread_cond_wait(pthread_cond_t* C, pthread_mutex_t* M);
 * Permette di risvegliare un thread sospeso su una condition variable `C`.
 * Se non ci sono thread in attesa **non ha alcun effetto**.
 * Se ci sono più thread in attesa ne viene scelto **uno a caso**
-* @param C variable condition sulla quale sospendersi
+*
+* @param C variable condition sulla quale risvegliare il processo
 */
 int pthread_cond_signal(pthread_cond_t* C);
 
 /**
-* Permette di risvegliare tutti i thread sospesi su una condition variable `C`.
+* Permette di risvegliare **tutti** i thread sospesi su una condition variable `C`.
 * Se non ci sono thread in attesa **non ha alcun effetto**.
-* @param C variable condition sulla quale sospendersi
+*
+* @param C variable condition sulla quale risvegliare i processo
 */
 int pthread_cond_broadcast(pthread_cond_t* C);
 ```
@@ -283,9 +301,9 @@ La `pthread_cond_broadcast` è utile qualora volessimo risvegliare **un thread s
 
 Entrambe le `signal` e `broadcast` **_vanno invocate dentro la sessione critica per maggiore stabilità_**, così da avere la certezza che le condizioni vengano rispettate al momento della loro invocazione.
 
-### Esempi
+### 3.2.2. Esempi
 
-Un primo esepio di utilizzo potrebbe essere l'accesso ad una risorsa condivisa, come un _ring bugger_ dove:
+Un primo esepio di utilizzo potrebbe essere l'accesso ad una risorsa condivisa, come un _ring-buffer_ dove:
 - I _thread_ consumatori prelevano valori dal buffer
 - I _thread_ produttori inseriscono nuovi valori dal buffer
 
@@ -318,11 +336,12 @@ int main(){
 }
 ```
 
-Un esempio di thread consumatore:
+<div class="grid2">
+<div class="top">
+<p class="p">Thread Consumatore</p>
+
 ```c
 // ...
-
-int val;
 
 ptrhead_mutex_lock(&r.M);
 
@@ -330,19 +349,25 @@ while(r.cont == 0){
 	pthread_cond_wait(&r.EMPTY, &r.M);
 }
 
-
-var = r.buffer[r.readInd];
+int var = r.buffer[r.readInd];
 r.cont--;
 r.readInt = (r.readInt + 1) % BUFFER_SIZE;
 
-// Adesso c'è spazio, quindi risvegliamo eventuali thread produttori in attesa
+/*
+* Adesso c'è spazio, quindi risvegliamo eventuali thread produttori in attesa
+*  Usiamo signal perché abbiamo prelevato un valore, quindi possiamo garantire solamente
+*  che si sia liberato uno slot, quindi non ha senso risvegliarli tutti i thread produttori
+*/
 pthread_cond_signal(&r.FULL);
 pthread_mutex_unlock(&r.M);
 
 // ...
 ```
 
-Un esempio di thread produttore:
+</div>
+<div class="top">
+<p class="p">Thread Produttore</p>
+
 ```c
 // ...
 
@@ -352,17 +377,24 @@ while(r.cont == BUFFER_SIZE){
 	pthread_cond_wait(&r.FULL, &r.M);
 }
 
-
 r.buffer[r.writeInd] = val;
 r.cont++;
 r.writeInd = (r.writeInd + 1) % BUFFER_SIZE;
 
-// Adesso c'è un nuovo valore, quindi risvegliamo eventuali thread consumatori in attesa
+/*
+* Adesso c'è un nuovo valore, quindi risvegliamo eventuali thread consumatori in attesa
+*  Usiamo signal perché abbiamo inserito un valore, quindi possiamo garantire solamente
+*  che si sia occupato uno slot, quindi non ha senso risvegliare tutti i thread consumatori
+*/
 pthread_cond_signal(&r.EMPTY);
 pthread_mutex_unlock(&r.M);
 
 // ...
 ```
+
+</div>
+</div>
+
 
 Un altro esempio è quello di fornire **accesso limitato ad una risorsa**.
 

@@ -32,9 +32,9 @@ title: Processi
 
 # 2. Processi in UNIX
 
-Unix è una famiglia di sistemi operativi multiprogrammati basati su processi.
+`UNIX` è una famiglia di sistemi operativi multiprogrammati basati su processi.
 
-Il processo Unix mantiene spazi di indirizzamento separati:
+Il processo `UNIX` mantiene spazi di indirizzamento separati:
 - **Privato**: la comunicazione avviene tramite scambio di messaggi
 - **Condiviso**: più processi possono eseguire lo stesso codice
 
@@ -59,12 +59,12 @@ Essistono diversi comandi di sistema che permettono la manipolazione dei process
 - `wait`: sospende un processo in attesa della terminazione dei figli
 - `exec..`: sostituzione di codice e dati
 
-I processi sono identificati da quello che si chiama `PID` (_Process ID_). ESistono alcune funzioni di sistema che permettono di ottenere informazioni su di esso:
+I processi sono identificati da quello che si chiama `PID` (_Process ID_). Esistono alcune funzioni di sistema che permettono di ottenere informazioni su di esso:
 ```cpp
 // Restituisce il PID del processo
 pid_t getpid();
 
-// REstituisce il PID del processo padre
+// Restituisce il PID del processo padre
 pid_t getppid();
 ```
 
@@ -98,8 +98,8 @@ pid = fork();
 
 printf("%d\n", pid);
 ```
-> _Padre_ | _Figlio_
->  `1509` |  `0`
+> _Padre_ : `1509`
+> _Figlio_: `0`
 
 ## 3.2. Terminazione Processi - `exit` e `wait`
 
@@ -137,10 +137,9 @@ Per gestire `status` in modo astratto, la libreria `<sys/wait.h>` fornisce alcun
 
 ## 3.3. Sostituzione di codice - `exec..()`
 
-Un processo può **_sostituire il programma che sta eseguendo_** (_codice e dati_) eseguendo una _syscall_ della "famiglia" `exec()` (`excecl`, `execle()`, `execclp()`, `execv()`, `execve()`, `execvp()`).
+Un processo può **_sostituire il programma che sta eseguendo_** (_codice e dati_) eseguendo una _syscall_ della "famiglia" `exec()` (`excecl()`, `execle()`, `execclp()`, `execv()`, `execve()`, `execvp()`).
 
 In particolare vediamo il comando `execl`:
-```
 ```cpp
 /**
 * @param path rappresenta i percorso assoluto del comando che si vuole eseguire (es. "bin/ls")
@@ -163,7 +162,7 @@ Le interazioni avvengono su **_astrazioni realizzate dal kernel_** interagendo m
 
 ## 4.1. 4.1 Sincronizzazione - `signal`
 
-I segnali sono il meccanismo messo a disposizione dai sistemi `Unix`/`Linux` per la sincronizzazione dei processi.
+I segnali sono il meccanismo messo a disposizione dai sistemi `UNIX`/`Linux` per la sincronizzazione dei processi.
 Permettono la notifica di eventi _asincroni_ da parte di un processo ad altri, e possono essere utilizzati anche dal _SO_ per notificare il verificarsi di eccezioni a un processo utente.
 
 I segnali sono rappresentati dalle _**interrupt software**_.
@@ -175,7 +174,7 @@ La ricezione di un segnale ha tre possibili effetti sul processo:
 
 Nei primi due casi il processo si comporta **in modo asincrono rispetto al segnale**, interrompendo il processo in esecuzione per eseguire l'_handler_. Se, alla terminazione dell'_handler_, il processo non era precedentemente terminato, allora questo riprende dall'istruzione successiva all'ultima eseguita prima dell'interruzione.
 
-Versioni diverse di `Unix` possono avere segnali diversi. La lista di questi segnali si trova nel file di sistema `signal.h`. La pagina di manuale sui segnali si trova in:
+Versioni diverse di `UNIX` possono avere segnali diversi. La lista di questi segnali si trova nel file di sistema `signal.h`. La pagina di manuale sui segnali si trova in:
 ```bash
 man 7 signal
 ```
@@ -243,7 +242,7 @@ int kill(pid_t pid, int sig)
 Invia il segnale `sig` al processo `pid`, dove se:
 - `pid > 0`: il segnale viene inviato a `pid`
 - `pid == 0`: il segnale viene inviato a _tutti i processi nello stesso_ `process group` del chiamante
-- `pid == -1`: il segnale viene inviato a _tutti i processi nello stesso_ a cui il chiamante può inviare segnali
+- `pid == -1`: il segnale viene inviato a _tutti i processi nello stesso_ `process group` a cui il chiamante può inviare segnali
 - `pid < -1`: il segnale viene inviato ai processi il cui `process group` è `-pid`
 
 La funzione restituisce `0` in caso di successo.
@@ -276,17 +275,17 @@ Così definita:
 unsigned int sleep(unsigned int seconds)
 ```
 
-Mette nello staato `sleeping` il processo chiamante fIno a che:
+Mette nello stato `sleeping` il processo chiamante fino a che:
 - Sono passati `seconds` secondi
 - Arriva un segnale che non viene ignorato
 
-Il processo viene risvegliato quando è passato il tempo indicato.
+All'accadere di uno dei due casi il processo viene risvegliato.
 
-Ritorna `0` se è passato il tempo previsto, altrimenti il tempo rimasto dopo l'arrivo di un segnale.
+Ritorna `0` se è passato il tempo previsto, altrimenti il tempo rimanente allo scadere del timer nell'istante di arrivo del segnale.
 
 Possiamo consultarla a:
 ```bash
-	man 3 sleep
+man 3 sleep
 ```
 
 #### 4.1.1.5. Alarm
@@ -349,12 +348,12 @@ Il segnale di default inviato è `SIGTERM`, ma è possibile cambiarlo tramite op
 kill -SEGNALE pid		# invia il sengale SEGNALE
 ```
 
-Per visualizzare gli si segnali disponibili è possibile eseguire:
+Per visualizzare la lista dei segnali disponibili è possibile eseguire:
 ```bash
 kill -l
 ```
 
-Un utente normale può invialre segnali **sono ai processi di cui è proprietario**. Un utente _root_ invece può inviare segnali **_a tutti i processi_**.
+Un utente normale può inviare segnali **sono ai processi di cui è proprietario**. Un utente _root_ invece può inviare segnali **_a tutti i processi_**.
 
 ## 5.2. Visualizzazione Processi - `ps`
 
@@ -388,13 +387,13 @@ Per vedere tutti i possibili stati:
 ```bash
 man ps
 
-ps aux 						# visualizza tutti i possibili comandi
+ps aux 						# visualizza tutti i possibili processi
 ps aux | grep "filtro"		# tra tutti i possibili processi, mostra solo le righe che contengono "filtro"
 ```
 
 # 6. Gerarchia dei processi
 
-I sistemi `Unix`/`Linux` prevedono un `init system`, ovvero un **processo mandato in esecuzione dal _kernel_ durante il boot**. Questo è il primo processo ad andare in esecuzione (ha infatti `PID = 1`), ed è il **_padre di tutti gli altri processi_**.
+I sistemi `UNIX`/`Linux` prevedono un `init system`, ovvero un **processo mandato in esecuzione dal _kernel_ durante il boot**. Questo è il primo processo ad andare in esecuzione (ha infatti `PID = 1`), ed è il **_padre di tutti gli altri processi_**.
 
 In alcuni sistemi `Linux` come `Debian`/`Ubuntu` il gestore dei processi utilizzato è `systemd`.
 
@@ -402,21 +401,23 @@ Per visualizzare l'albero dei processi si utilizza il comando:
 ```bash
 pstree
 ```
-> systemd─┬─ModemManager───3*[{ModemManager}]
->        ├─NetworkManager───3*[{NetworkManager}]
->        ├─accounts-daemon───3*[{accounts-daemon}]
->        ├─at-spi-bus-laun─┬─dbus-daemon
->        │                 └─4*[{at-spi-bus-laun}]
->        ├─at-spi2-registr───3*[{at-spi2-registr}]
->        ├─avahi-daemon───avahi-daemon
->        ├─colord───3*[{colord}]
->        ├─cron
->        ├─cups-browsed───3*[{cups-browsed}]
->        ├─cupsd
->        ├─dbus-daemon
->        ├─gdm3─┬─gdm-session-wor─┬─gdm-wayland-ses─┬─dbus-run-sessio─┬─dbus-daemon
->        │      │                 │                 │                 └─gnome-session-b─┬─gnome-shell─┬─Xwayland
-> 		...    ...     			 ...			   ...								   ...			 ...
+```
+systemd─┬─ModemManager───3*[{ModemManager}]
+    	├─NetworkManager───3*[{NetworkManager}]
+    	├─accounts-daemon───3*[{accounts-daemon}]
+    	├─at-spi-bus-laun─┬─dbus-daemon
+    	│                 └─4*[{at-spi-bus-laun}]
+    	├─at-spi2-registr───3*[{at-spi2-registr}]
+    	├─avahi-daemon───avahi-daemon
+    	├─colord───3*[{colord}]
+    	├─cron
+    	├─cups-browsed───3*[{cups-browsed}]
+    	├─cupsd
+    	├─dbus-daemon
+    	├─gdm3─┬─gdm-session-wor─┬─gdm-wayland-ses─┬─dbus-run-sessio─┬─dbus-daemon
+    	│      │                 │                 │                 └─gnome-session-b─┬─gnome-shell─┬─Xwayland
+       ...    ...     			...			   	  ...								  ...			...
+```
 
 Un proccesso ha **_7 identificatori_**.
 
@@ -463,16 +464,16 @@ uid_t getegid();
 
 ## 6.2. Gruppi di processi
 
-I processi sono organizzati in **_gruppi_**. Quando un nuovo processo viene mandato in esecuzione da termianle gli viene associato **_un nuovo process group_**. Gli eventuali figli di questo processo, compresi quelli generati dalla _syscall_ `exec`, _erediteranno il process group_.
+I processi sono organizzati in **_gruppi_**. Quando un nuovo processo viene mandato in esecuzione da terminale gli viene associato **_un nuovo process group_**. Gli eventuali figli di questo processo, compresi quelli generati dalla _syscall_ `exec`, _erediteranno il process group_.
 
 I gruppi permettono di mandare segnali ad una gerarchia di processi, e sono alla base del _job-control_ offerto dalla _shell_.
 
 # 7. Priorità dei processi
 
-Lo _scheduler_ Linux assegna la CPU ai processi tenendo conto di un **livello di priorità** assegnato a ciascun processo.
+Lo _scheduler_ `Linux` assegna la **CPU** ai processi tenendo conto di un **livello di priorità** assegnato a ciascun processo.
 La priorità dipende principalmente dalla classe di scheduling del processo, e si divide tra _real-time_ e _normale_.
 
-La priorità dei processi _noramli_ può essere in parte controllata mediante il concetto di **_niceness_** e la relativa _system call_ `nice`.
+La priorità dei processi _normali_ può essere in parte controllata mediante il concetto di **_niceness_** e la relativa _system call_ `nice`.
 Ad ogni processo infatti è associato un valore di _niceness_ nell'intervallo `[-20, 19]`, dove un valore più alto porta ad avere _minore priorità di esecuzione_.
 
 In questo modo un processo eseguito in background, e quindi non interattivo, può lasciare più tempo di elaborazione agli altri processi.
@@ -495,7 +496,7 @@ renice valore_nice PID
 
 Con _job-control_ si intende la possibilità di sospendere e riattivare gruppi di processi, detti _jobs_, offerta dalla _shell_ mediante opportuni comandi.
 
-Abbiamo già detto che la _shell_ associa un job ID distinto ad ogni comando eseguito (alle _pipeline_ di comandi viene associato un solo job).
+Abbiamo già detto che la _shell_ associa un `JOB_ID` distinto ad ogni comando eseguito (alle _pipeline_ di comandi viene associato un solo job).
 Questi _job_ sono salvati in una tabella specifica, visualizzabile tramite il comando `jobs`.
 
 Un _job_ in esecuzione in **foreground** ha il controllo dello _standard input/output/error_, di fatto è come se "prendesse il controllo del terminale" restituendolo alla shell solo alla sua terminazione.
@@ -505,7 +506,7 @@ Per eseguire _job_ in **background** si utilizza il carattere `&` alla fine del 
 comando &
 ```
 
-In questo modo il processo **non ha più accesso allo standard input**, ma permettiamo all'utente di utilizzare la shell mentre il job viene terminato.
+In questo modo il processo **non ha più accesso allo standard input**, ma permettiamo all'utente di utilizzare la shell mentre il job viene eseguito in parallelo.
 
 Nel caso avessimo già avviato un processo in _foreground_, per fermarlo possiamo inviare il segnale `SIGTSTP` attraverso la combinazione `Ctrl+Z`.
 
@@ -554,9 +555,9 @@ Il comando non influsice direttamente sulle modifiche relative alla lettura sull
 Il comando `top` permette di visualizzare i processi e di effettuare operazioni su di essi in modo interattivo. Vengono visualizzate anche informazioni complessive sul sistema (_carico CPU_, _utilizzo della memoria_, ...)
 
 I processi sono ordinati in **ordine di utilizzo decrescente della CPU**.
-Dall'interfaccia la _niceness_ dei suoi processi**he si genera dopo aver chiamato il comando è possibile incviare segnali ai processi e cambiarne il valore di _niceness_.
+Dall'interfaccia che si genera dopo aver chiamato il comando è possibile inviare segnali ai processi e cambiarne il valore di _niceness_.
 
-Di seguito possiamo vedere una serie di comando interattivi:
+Di seguito possiamo vedere una serie di comandi interattivi utilizzabili dall'interfaccia:
 - `h`: _help_
 - `H`: permette di vedere i singoli _thread_
 - `d`: intervallo di aggiornamento (_delay_)
