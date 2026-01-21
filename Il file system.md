@@ -23,7 +23,6 @@ title: Il File System
 		- [2.3.3. Allocazione a Indice](#233-allocazione-a-indice)
 		- [2.3.4. Allocazione in UNIX](#234-allocazione-in-unix)
 			- [2.3.4.1. Strutture Dati del Kernel per l'accesso a File](#2341-strutture-dati-del-kernel-per-laccesso-a-file)
-	- [2.4. Dispositivo Virtuale](#24-dispositivo-virtuale)
 
 # 2. Il File System
 
@@ -55,7 +54,7 @@ I processi vedono quindi la memoria secondaria attraverso questa _struttura astr
 ### 2.1.1. File
 
 Un file è:
-> Un insieme di informazioni rappresetnate mediante insieme di record logici (bit, byte, linee, record, ...)
+> Un insieme di informazioni rappresentate mediante insieme di record logici (bit, byte, linee, record, ...)
 
 Ogni file è caratterizzato da un insieme di **attributi**, ad esempio:
 - **Tipo**: stabilisce l'appartenenza del file ad una classe (eseguibili, batch, testo, ...)
@@ -70,27 +69,33 @@ Nei sistemi multiutente troviamo anche:
 
 ### 2.1.2. Directory
 
-Una _directory_:
-> È un astrazione che cosente di raggruppare più file.
+<div class="grid2">
+<div class="">
+
+Una _directory_ è:
+> Un astrazione che cosente di raggruppare più file.
 > Una _directory_ può contenere più file, così come altre _directory_.
 
+Una _directory_ può quindi essere vista come un operatore di composizione di file e _directory_.
 
-Una _directory_ può quindi essere visto come un operatore di composizione di file e _directory_.
-
-Nei sistemi operativi moderni la soluzione più comune è rappresentata da _file system_ **strutturati ad albero**, dove ogni _file_ appartiene in una sola _directory_, e ogni _directory_, tranne la `root`, appartiene ad un altra _directory_.
+Nei sistemi operativi moderni _file system_ sono rappresentati seguendo una **struttura ad albero** che segue le seguenti regole:
+- Ogni _file_ appartiene in una sola _directory_
+- Ogni _directory_ (tranne la `root`) appartiene ad un altra _directory_
 
 In alcuni sistemi, come in `UNIX` e `Linux`, viene permesso a più _directory_ di **_condividere lo stesso file_** attraverso il _linking_.
 Questa modifica cambia la struttura logica del _file system_ rendendolo un **_grafo diretto aciclico_**.
-
-<img class="" src="./images/File System/fs-dag.png">
-
+</div>
+<div class="">
+<img class="80" src="./images/File System/fs-dag.png">
+</div>
+</div>
 
 ### 2.1.3. Gestione del File System
 
 Il _sistema operativo_ realizza anche i meccanismi per la gestione del _file system_ attraverso delle specifiche _system call_.
 
 Le operazioni fondamentali per la gestione del file system sono:
-- **Creazione e cancellazione di directory**: modificano la struttura logica del file system, aggiungendo/eliminando rami al grafo che rappresenta il dile system
+- **Creazione e cancellazione di directory**: modificano la struttura logica del file system, aggiungendo/eliminando rami al grafo
 - **Aggiunta/Cancellazione di file**
 - **Listing**: permette di ispezionare il contenuto di uno o più _directory_
 - **Attraversamento della directory**: permette la _navigazione_ attraverso la struttura logica del _file system_.
@@ -99,15 +104,15 @@ Queste funzionalità sono disponibili per gli utenti sotto forma di comandi di _
 
 ## 2.2. Accesso al File System
 
-Il livello sottostante si chiama **Accesso** che definisce e realizza i meccanismi mediante i quali è possibile eseguire operazioni sul contenuto dei file, generalmente _lettura_ o _scrittura_.
+Il secondo livello è detto di **Accesso**. Questo livello definisce e realizza i meccanismi mediante i quali è possibile eseguire operazioni sul contenuto dei file, generalmente _lettura_ o _scrittura_.
 
 In questo livello i _file_ sono visti come un insieme di **record logici**, ovvero di unità di trasferimenti tra un processo e il file.
 Il _record logico_ è quindi caratterizzato da alcune proprietà come il _tipo_ e la _dimensione_, in particolare in `UNIX` un _record logico_ è **_1 Byte_**.
 
-Queste operazioni elementari di accesso ai file sono messe a disposizione dei processi attraverso opportune _system calls_, subordinatamente al soddisfacimento delle **politiche di protezione**.
-Queste stabiliscono _chi_ e _in che modo_ è abilitato ad accedere al file.
+Queste operazioni elementari di accesso ai file sono messe a disposizione dei processi attraverso opportune _system-call_, subordinatamente al soddisfacimento delle **politiche di protezione**.
+Queste politiche stabiliscono infatti _chi_ e _in che modo_ è abilitato ad accedere al file.
 
-Il livello utilizza quindi delle _strutture dati_ che rappresnetano concretaente un file, chiamate **_descrittori di file_**. I _descrittori di file_ devono essere memorizzati in modo persistente mediante apposite strutture in memoria secondaria.
+Questo livello utilizza quindi delle _strutture dati_ che rappresentano concretamente i file, chiamate **_descrittori di file_**. I _descrittori di file_ devono essere memorizzati in modo persistente mediante apposite strutture in memoria secondaria.
 
 In `UNIX` questi descrittori sono gli `i-node`, conservati in `i-list` e indirizzati da `i-number`.
 
@@ -115,7 +120,7 @@ In `UNIX` questi descrittori sono gli `i-node`, conservati in `i-list` e indiriz
 
 Poiché ogni file appartiene ad una directory, ogni directory mantiene il collegamento con i descrittori dei file contenuti in esso.
 
-Ad esempio, in _Windows_ si segue un approccio distribuito, dove la directory è una **struttura dati di tipo taellare che contiene i descritori dei file**, come nell'immagine di seguito.
+Ad esempio, in _Windows_ si segue un approccio distribuito, dove la directory è una **struttura dati di tipo tabellare che contiene i descritori dei file**, come nell'immagine di seguito.
 
 <img class="60" src="./images/File System/windows-access-scheme.png">
 
@@ -125,28 +130,26 @@ In `UNIX` invece si segue un **approccio centralizzato**, dove la tabella che ra
 
 ### 2.2.2. Accesso ai File
 
-Abbiamo detto che è compito di questo livello implementare e mettere a disposizione l'accesso _on-line_ ai file, che sia:
+Abbiamo detto che è compito di questo livello implementare e mettere a disposizione l'accesso _on-line_ ai file, che può essere:
 - **Lettura**: leggere il contenuto di _record logici_ dal file
 - **Scrittura**: si divide in:
-  - **Scrittura Pura**: modifica il contenuto dei _record_ all'interno di un file, mantenendo inalterato il numero di _record_ del file
-  - **Append**: aggiunge ulteriori _record_ al file
+  - **Scrittura Pura**: modifica il contenuto dei _record_ all'interno di un file, diminuendo o mantenendo inalterato il numero di _record_ del file
+  - **Append**: aggiunge ulteriori _record_ al file senza modificare quelli già esistenti
 
-
-Ogni operazione richiederebbe quindi la localizzazione di informazioni su disco, quindi:
+Ogni operazione richiederebbe la localizzazione di informazioni su disco quali:
 - Indirizzi dei record logici a cui accedere
-- Gli altri attributi del ifle
+- Gli altri attributi del file
 - I record logici
 
-Introducendo un **_notevole overhead_**.
-
-Per rendere efficienti queste operazioni i _file system_ mantengono in memoria una struttura che registra i file attualmente in uso, detta **tabella dei file aperti**.
+Se dovessimo effettuare queste operazioni per ogni accesso introdurremmo un **_notevole overhead_**.
+Per renderle efficienti invece i _file system_ mantengono in memoria una struttura che registra i file attualmente in uso, detta **tabella dei file aperti**.
 Per ogni _file aperto_ sono conservate alcune informazioni, quali `puntatore_a_file`, `posizione_su_disco`, ...
 
-Si fa inoltre **Memory Mapping** dei file aperti, ovvero questi file vengono temporaneamente copiati (nella loro interezza o solo alcune porzioni di esse) nella **RAM**, così da consentirne un _accesso più rapido_.
+Si fa inoltre **Memory Mapping** dei file aperti, ovvero questi file vengono temporaneamente copiati (nella loro interezza o solo in alcune porzioni) nella **RAM**, così da consentirne un _accesso più rapido_.
 
 È quindi necessario introdurre due nuove operazioni:
-- **Apertura**: permette di introdurre un nuovo elemento nela _tabella dei file aperti_ e eventuale _memory mapping_ del file
-- **Chiusura**: salva il file in memoria secondara e elimina l'elemento corrispondente dalla tabella dei file aperti. Possono anche essere effettuate ulteriori operazioni che dipendono dai singoli sistemi operativi.
+- **Apertura**: permette di introdurre un nuovo elemento nella _tabella dei file aperti_ e eventualmente effettuare _memory mapping_ del file
+- **Chiusura**: salva il file in memoria secondara e elimina l'elemento corrispondente dalla _tabella dei file aperti_. Possono anche essere effettuate ulteriori operazioni che però dipendono dai singoli sistemi operativi.
 
 ### 2.2.3. Metodi di Accesso
 
@@ -155,14 +158,14 @@ L'accesso a un file più avvenire secondo varie modalità:
 - **Accesso Diretto**
 - **Accesso a Indice**
 
-Poiche ogni metodo di accesso deve essere **indipendente dal tipo di dispositivo utilizzato e dalla tecnica di allocazione dei blocchi in memoria**, presuppone implicitamente implicitamente un organizzazione interna del file, che viene visto come una **_sequenza di record logici numerati_** $\{R_1, ..., R_i, ..., R_N\}$.
+Poiche ogni metodo di accesso deve essere **indipendente dal tipo di dispositivo utilizzato e dalla tecnica di allocazione dei blocchi in memoria**, si presuppone implicitamente che i file abbiamo un organizzazione interna interpretata come **_sequenza di record logici numerati_** &lt;$R_1, ..., R_i, ..., R_N$&gt;.
 
 #### 2.2.3.1. Accesso Sequenzale
 
 Nell'accesso sequenzale per accedere ad un particolare record $R_i$ è necessario accedere prima agli $(i-1)$ _record_ che lo precedono nella sequenza.
 
 Le primitive che permettono l'accesso seqeunziale seguono il modello generale:
-```c
+```cpp
 /**
 * @brief permette di leggere il prossimo record
 * @param f nome del file
@@ -178,7 +181,7 @@ readnext(f, &V);
 writenext(f, &V);
 ```
 
-Ogni operazione di accesso posizione il puntatore al file sull'elemento successivo a quello letto/scritto.
+Ogni operazione di accesso posiziona il puntatore al file sull'elemento successivo a quello letto/scritto.
 
 Questo tipo di accesso è **_quella che abbiamo nei sistemi_** `UNIX`.
 
@@ -187,7 +190,7 @@ Questo tipo di accesso è **_quella che abbiamo nei sistemi_** `UNIX`.
 Nell'accesso diretto è possibile accedere direttamente ad un particolare record logico $R_i$ mediante il suo indice.
 
 Le primitive che permettono l'accesso diretto seguono il modello generale:
-```c
+```cpp
 /**
 * @brief permette di leggere il prossimo record
 * @param f nome del file
@@ -210,7 +213,7 @@ writed(f, i, &V);
 Ad ogni file viene associata una struttura dati contenente l'indice delle informazioni contenute nel file.
 
 Le operazioni di accesso seguono quindi il modello generale:
-```c
+```cpp
 /**
 * @brief permette di leggere il prossimo record
 * @param f nome del file
@@ -228,7 +231,7 @@ readk(f, key, &V);
 writek(f, key, &V);
 ```
 
-QUesto tipo di accesso presenta due svantaggi:
+Questo tipo di accesso presenta due svantaggi:
 - **Doppio accesso**: per accedere al contenuto di un record, devo prima accedere al record del _file indice_ dove è contenuta il riferimento al record logico
 - **Difficile scalabilità**: per aggiungere un nuovo record è necessario aggiungerne due, raddoppiando la velocità di saturazione della memoria.
 
@@ -239,28 +242,27 @@ Il terzo strato è il livello di **Organizzazione Fisica**, che ha come compito 
 
 In questo livello lo spazio disponibile per l'allocazione sul disco viene visto come un insieme di **_blocchi fisici_**.
 
-Il **blocco fisico** è l'unità di allocazione e di trasferimento delle informazioni sul dispositivo. Ad ogni blocco è associata quindi una posizione particolare sulla superficie del disco. Un bloccco ha dimensione costante $D_b$, generalmente questa è **molto maggiore** della dimensione di un record logico $D_r$
+Il **blocco fisico** è l'unità di allocazione e di trasferimento delle informazioni sul dispositivo, e gli è associata una posizione particolare sulla superficie del disco e una dimensione costante $D_b$, generalmente **molto maggiore** della dimensione di un record logico $D_r$.
 
 In un singolo blocco possiamo contenere $N_b = \frac{D_b}{D_r}$ record logici.
 
-Questo livello realizza quindi i **metodi di allocazione**, che stabiliscono il collegamento tra ogni file e l'insieme di blocchi fisici nel quale esso è allocato.
+Questo livello si occupa quindi di realizzare i **metodi di allocazione**, che stabiliscono il collegamento tra ogni file e l'insieme di blocchi fisici nel quale esso è allocato.
+Dobbiamo quindi utilizzare delle tecniche di allocazione che stabiliscano una corrispondenza tra i _record logici_ contenuti in ogni file e l'insieme dei blocchi nei quali sono effettivamente memorizzati.
 
-Non tutta la memoria è utilizzata per l'allocazione dei file, vedremo in seguito che una parte è riservata all'allocazione di alcune strutture dati per la descrizione della struttura logicaa del _file system_ e per il supporto della gestione degli accessi ai file da parte dei processi.
-
-Dobbiamo quindi utilizzare delle tecniche di allocazione che stabiliscano uan corrispondenza tra i _record logici_ contenuti in ogni file e l'insieme dei blocchi nei quali sono effettivamente memorizzati.
+Partiamo dal dire che non tutta la memoria è utilizzata per l'allocazione dei file. Vedremo in seguito che una parte è riservata all'allocazione di alcune strutture dati per la descrizione della struttura logica del _file system_ e per il supporto della gestione degli accessi ai file da parte dei processi.
 
 ### 2.3.1. Allocazione contigua
 
-Ogni file è mappato su un insieme di blocchi **fisicamente contigui**.
+Questa tecnica mappa ogni file su un insieme di **blocchi fisicamente contigui**.
 
 <div class="grid2">
 <div class="">
 
-Per fare ciò è innanzitutto necessario calcolare il numero di blocchi necessari per salvare un file, e successivamente si procede a cercare una partizione di blocchi libero abbastanza grande da contenere il file.
+Per fare ciò è innanzitutto necessario calcolare il numero di blocchi necessari per salvare un file, e successivamente si procede a cercare una partizione di blocchi liberi abbastanza grande da contenere il file.
 
-Questo tipo di allocazione ha diversi vantaggi:
-- **Ricerca di un blocco semplice**: un dato blocco si trova in $B + \Big\lfloor\frac{i}{N_b}\Big\rfloor$, dove $i$ è l'`IO pointer` di un dato record, e $B$ è l'indirizzo del primo blocco
-- **Possibilità di accesso sequenzale e diretto** allo stesso costo
+Questo tipo di allocazione ha diversi vantaggi, tra i quali:
+- **Semplice ricerca di un blocco**: noto l'indirizzo del primo blocco del file $(B)$ e l'`IO pointer` di un dato record $(i)$, un dato blocco si trova in posizione: $B + \Big\lfloor\frac{i}{N_b}\Big\rfloor$
+- **Possibilità di accesso sequenzale e diretto allo stesso costo**
 
 Tuttavia ha anche molti svantaggi:
 - **Frammentazione Esterna**: man mano che si riempie il disco si rimangono zone contigue sempre più piccole, rendendo necessario il _compattamento_
@@ -275,20 +277,20 @@ Tuttavia ha anche molti svantaggi:
 
 ### 2.3.2. Allocazione a Lista Concatenata
 
-QUest atecnica memorizza ogni file in un insieme di blocchi non contigui organizzati in una lista concatenata
+Questa tecnica memorizza ogni file in un insieme di **blocchi non contigui** organizzati in una **lista concatenata**.
 
 <div class="grid2">
 <div class="">
 
-L'organizzazione è ancora sequenziale, ma i blocchi successivi non devono necessariamente essere vicini.
+L'organizzazione è ancora di tipo sequenziale, ma stavolta blocchi successivi non devono necessariamente essere vicini.
 
-Questa tecnica ha diversi vantaggi:
+Cio ci fornisce diversi vantaggi:
 - **Non soffre di frammentazione esterna**
-- **Minor costo di allocazione**
+- **Minor costo di allocazione**: non è più necessario scorrere l'intero disco per allocare un file
 - **Accesso sequenzale a basso costo**: dato il primo blocco abbiamo il puntatore al successivo
 
 Vi sono ancora diversi svantaggi:
-- **Broken Links**: se un blocco vine danneggiato, non solo perdiamo le informazioni che contiene ma anche le informazioni sul successivo, rendendo irraggiungibile il resto del file
+- **Broken Links**: se un blocco viene danneggiato, non solo perdiamo le informazioni che contiene ma anche le informazioni sul successivo, rendendo irraggiungibile il resto del file
 - **Overhead spaziale**: dover salvare i puntatori diminuisce lo spazio effettivo utilizzabile
 - **Accesso diretto oneroso**: in questo caso, per accedere all'$i$-esimo blocco sono necessari $\Big\lfloor\frac{i}{N_b}\Big\rfloor$ accessi al disco
 - **Costo della ricerca di un blocco**
@@ -298,19 +300,26 @@ Vi sono ancora diversi svantaggi:
 </div>
 </div>
 
-Per arginare il problema dei _broken links_ è possibile realizzare una _double-linked-list_, andando a sacrificare un altra porzione del blocco per salvare il secondo puntatore.
+Per arginare il problema dei _broken links_ è possibile realizzare una _double-linked-list_, andando a sacrificare un altra porzione del blocco per salvare un secondo puntatore che punta al blocco precedente.
 
-<img class="" src="./images/File System/double-linked-list-allocation.png">
+<figure class="">
+<img class="100" src="./images/File System/double-linked-list-allocation.png">
+<figcaption>
 
-
-Alcuni sistemi operativi, ad esempio `Windows`, affronato il problema affiancando ad una allocazione basata su una _linked-list_ introducendo una struttura dati nella quale viene descritta la **mappa di allocazione di tutti i blocchi**, detta **_File Allocation Table_** `FAT` memorizzata in una posizione predefinita.
+Nel caso del _descrittore di file_ il primo puntatore punta al primo blocco, mentre il secondo punta all'ultimo blocco.
+Ciò aumenta ad uno la tolleranza ad errore.
+</figcaption>
+</figure>
 
 <div class="grid2">
 <div class="">
 
-Essa contiene un elemento per ogni blocco del dispositivo il cui valore indica:
-- se il blocco è libero
-- Se è occupato l'indice dell'elemento della tabella che rappresenta il blocco successivo nella lista
+Alcuni sistemi operativi, ad esempio `Windows`, affronato il problema affiancando ad una allocazione basata su una _linked-list_ una struttura dati nella quale viene descritta la **mappa di allocazione di tutti i blocchi**, detta **_File Allocation Table_** `FAT`.
+Questa tabella viene memorizzata in una posizione predefinita della memoria, così da essere reperibile in qualsiasi momento.
+
+Essa contiene tanti elementi quanti sono i blocchi del dispositivo, ed in ogniune è presente un valore che indica:
+- Se il blocco è libero
+- L'indice dell'elemento della tabella che rappresenta il blocco successivo nella lista
 
 In questo modo, anche in perdita di concatenamento è possibile effettuare il recupero del puntatore perso accedendo alla `FAT`.
 
@@ -334,18 +343,23 @@ Questo tipo di allocazione ha gli stessi vantaggi dell'allocazione tramite _link
 
 Il grande svantaggio di questa tecnica è la **_non scalabilità_**, infatti se il file crescesse tanto da necessitare più blocchi di quelli indicizzabili da un unico blocco avremmo un problema.
 
-In particolare dato un disco di capacità $C$, otteniamo quanti bit sono necessari per indicizzare tutti i blocchi di dimensione $D_b$ ($I = \log{(\frac{C}{D_b})}$ indici).
-A questo punto dobbiamo capire quanti indici è possibile salvare in un singolo blocco, ovvero $\frac{D_b}{I}$ indici.
-A questo punto si moltiplica ogni indice per la dimensione di un blocco:
+In particolare dato un disco di capacità $C$, otteniamo quanti bit sono necessari per indicizzare tutti i blocchi di dimensione $D_b$:
 $$
-	D_M = \frac{D_b^2}{I} = \frac{D_b^2}{\log{(\frac{C}{D_b})}}
+	\quad I = \log{(\frac{C}{D_b})} \text{ indici}
 $$
+
+Ciò significa che in un singolo blocco è possibile salvare al massimo $\frac{D_b}{I}$ indici.
+
+Per ottenere la dimensione massima di un file è quindi sufficiente moltiplicare per ogni indice salvato la dimensione di un blocco:
+$$
+	\quad D_M = \frac{D_b^2}{I} = \frac{D_b^2}{\log{(\frac{C}{D_b})}}
+$$
+
 </div>
 <div class="">
 <img class="80" src="./images/File System/index-allocation.png">
 </div>
 </div>
-
 
 ### 2.3.4. Allocazione in UNIX
 
@@ -355,24 +369,25 @@ Il metodo di allocazione utilizzato in `UNIX` è a **indicizzazione su più live
 <div class="grid2">
 <div class="">
 
-In `UNIX` **_tutto è un file_**.
+La regola sulla quale ci dobbiamo basare è che:
+> <strong><em>In <code>UNIX</code> tutto è un file</em></strong>.
 
 I file si dividono in tre categorie:
 - **Ordinari**: sono i veri e propri file
 - **Directory**: sono dei file che rappresentano delle raccolte di altri _file_
 - **Speciali**: rappresentano i dispositivi (ad esempio quelle in `/dev/`)
 
-Ad ogni file possono essere associati **_uno o più nomi simbolici_** detti _link/alias_, che si **_riferiscono ad uno ed un solo descrittore_**, detto `i-node`.
+Ad ogni file possono essere associati **_uno o più nomi simbolici_** detti _link/alias_. Ogni _link_ si **_riferirà però ad uno ed un solo descrittore_**, detto `i-node`.
 
 I singoli `i-node` sono identificati univocamente dagli `i-number` e sono contenuti nella `i-list`.
 
 </div>
 <div class="">
-<img class="" src="./images/File System/UNIX-allocation.png">
+<img class="70" src="./images/File System/UNIX-allocation.png">
 </div>
 </div>
 
-Il metodo di allocazione utilizzato in unix è quindi ad **_indice a più livelli_**.
+Il metodo di allocazione utilizzato in `UNIX` è quindi ad **_indice a più livelli_**.
 Questa tecnica formatta il disco in blocchi fisici di dimensione costante e prefissata, dividendo la superficie del disco in quattro regioni.
 
 <div class="grid2">
@@ -380,36 +395,45 @@ Questa tecnica formatta il disco in blocchi fisici di dimensione costante e pref
 
 La prima regione, detta `BootBlock`, occupa un blocco fisico, allocato ad un **indirizzo prefissato**, e contiene il programma di inizializzazione del sistema da eseguire nella fase di _bootstrap_.
 
-La regione `SuperBlock`, occupa anch'essa la dimensione di un blocco. e descrive l'allocazione del _file system_. In particolare i limiti delle quattro regioni, il puntatore alla lista dei blocchi liberi e il puntatore alla lista degli `i-node` liberi.
+La seconda regione è il `SuperBlock`. Occupa anch'essa la dimensione di un blocco e descrive l'allocazione del _file system_. In particolare qui sono contenuti:
+- I limiti delle quattro regioni
+- Il puntatore alla lista dei blocchi liberi
+- Il puntatore alla lista degli `i-node` liberi.
 
-L'estensione dell'area `DataBlocks` è tipicamente molto maggiore delle altre, poiché rappresneta la zona effettivamente diposnibile per la memorizzazione dei file.
-I blocchi liberi di questa zono sono organizzati in una lista collegata il cui indirizzo è ocntenuto nel `SuperBlock`.
+La terza regione è la  `i-List` che contiene il vettore di tutti gli `i-node`.
 
-Infine la `i-List` contiene il vettore di tutti gli `i-node`.
+L'ultima area è il `DataBlocks`. Questa area è tipicamente molto più grande delle altre, poiché rappresenta la zona effettivamente diposnibile per la memorizzazione dei file.
+I blocchi liberi di questa zono sono organizzati in una lista collegata il cui primo indirizzo è contenuto nel `SuperBlock`.
+
 </div>
 <div class="">
-<img class="80" src="./images/File System/UNIX-physical-organization.png">
+<img class="50" src="./images/File System/UNIX-physical-organization.png">
 </div>
 </div>
 
-Un `i-node` quindi è formato da:
+Gli `i-node` sono quindi formati da:
 - **Tipo**: indica se il file è _ordinario_, _directory_ o _speciale_ (dispositivi)
 - **Proprietario e Gruppo**: indicano chi è l'utente proprietario del file e qual è il gruppo di appartenenza del proprietario
 - **Dimensione**: indica in numero di blocchi occupati dal file in memoria di massa
-- **Dara**: indica la data dell'ultima modifica effettuata sul file
+- **Data**: indica la data dell'ultima modifica effettuata sul file
 - **Link**: il numero di nomi che riferiscono il file (_hard-link_). Se si ha un solo nome, questo valore è `1`
 - **Bit di Protezione**: è l'insieme dei `12bit` che esprime la politica di protezione da applicare sul file. contiene i 9 bit dei premessi, `SUID`, `GUID` e `STIcky bit`.
 - **Vettore di Indirizzamento**: è costituito da un insieme di indirizzi che consente l'indirizzamento dei blocchi di dati sui quali è allocato il file (tipicamente sono `13 - 15`).
 
-Nell'ipotesi che il vettore contenga **13 indirizzi** (così come nelle prime versioni del sistema operativo), e che un blocco abbia $D_b = 512 B$ con indirizzi su `32bit`, ovvero un blocco contiene $128$ indirizzi.
-I primi 10 blocchi di dati sono accessibili direttamente dai primi 10 puntatori $(10 \cdot 512B = 5KB)$.
-Altri 128 blocchi di dati sono accessibili con **indirizzazione singola** mediante puntatore `11` che punta ad un _blocco indice_ $(128 \cdot 512B = 64KB)$
-Altri $128^2$ blocchi di dati sono accessibili con **indirizzazione doppia** mediante il puntatore `12` che punta ad un _blocco indice che punta a blocchi indici_. $(128 \cdot 128 \cdot 512B = 8MB)$
-Il puntatore `13` tramite **indicazzione tripla** permette creazioen di file di dimnesione fino ad $1GB$.
-Il questo modo la dimensione massima di un fiel è nell'ordine del **_Giga Byte_**.
+Per capire meglio come vengono gestiti gli indirizzi nel vettore di indirizzamento supponiamo di avere:
+- **13 indirizzi** nel vettore (così come nelle prime versioni del sistema operativo)
+- Blocchi di dimensione $D_b = 512 B$ con indirizzi su `32bit`. Ciò significa che un blocco contiene $128$ indirizzi.
 
+Se tutti gli indirizzi indirizzassero direttamente ai blocchi di dati avremmo che un file può essere al massimo $13 \cdot 512B = 6,5KB$, poco per gli standard moderni.
+Quello che si fa quindi è sfruttare l'**indirizzamento multiplo**:
+- I primi `10` indirizzi nel vettore accedono direttamente ai _blocchi di dati_, per una dimensione totale di $10 \cdot 512B = 5KB$
+- L'`11`-esimo indirizzo nel vettore punta a un _blocco indice_ sfruttando l'**indirizzamento singolo**. Ciò significa che solo questo permette l'accesso a $128 \cdot 512B = 64KB$ di memoria
+- Il `12`-esimo indirizzo nel vettore punta invece a un _blocco indice che punta a blocchi indici_ sfruttando l'**indirizzamento doppio**. In questo caso questo indirizzo permette l'accesso a $128 \cdot 128 \cdot 512B = 8MB$ di memoria
+- Il `13`-esimo indirizzo nel vettore utilizza l'**indirizzamento triplo** indicizzando $128^3 \cdot 512B = 1GB$ di memoria.
 
-Le _derectory_ sono rappresentati da un file, in cui contenuto ne descrive la struttura logica. In particolare ogni record coniene la coppia di informazioni `<nome_relativo, i-number>` associate al file, come nell'immagine di seguito.
+Avendo solamente 13 indirizzi nel vettore la dimensione massima di un file è nell'ordine del **_Giga Byte_** $(5KB + 64KB + 8MB + 1GB)$.
+
+Le _directory_ sono rappresentati da un file, in cui contenuto ne descrive la struttura logica. In particolare ogni record coniene la coppia di informazioni `<nome_relativo, i-number>` associate al file, come nell'immagine di seguito.
 
 <img class="" src="./images/File System/UNIX-directory-realization.png">
 
@@ -417,24 +441,19 @@ Le _derectory_ sono rappresentati da un file, in cui contenuto ne descrive la st
 
 Ogni file è quindi organizzato come una sequenza di **byte** detta _stream_.
 
-Il metodo di accesso adottato nel sistema `UNIX` è quello sequenzale, ad ogni file aperto è quindi associato un `I/O Pointer` che indica implicitamente il prossimo elemento a cui accedere. Ogni accesso in memoria provoca un avanzamento dell'`I/O pointer`.
-Ogni file termina quindo con la sequenza `EOF` (_End-Of-File_).
+Il metodo di accesso adottato nel sistema `UNIX` è quello sequenzale, ad ogni file aperto è quindi associato un `I/O Pointer` che indica implicitamente il prossimo elemento a cui accedere. Ogni accesso in memoria provoca un avanzamento dell'`I/O pointer`, fino a che non si incontra la sequenza `EOF` (_End-Of-File_) che indica la terminazione del file.
 
 Per comprendere al meglio i meccanismi di accesso analizziamo le caratteristiche delle strutture dati del _kernel_.
 
-A livello globale il _kernel_ mantiene una **_Tabella dei File Aperti del Sistema_** (`TFAS`) allocata nella _user structure del processo_. Questa tavela contiene un elemento per **_ogni file aperto nel sistema_**, individuato da un indice intero detto **_file descriptor_** `fd`. Questo elemento non è altro che un puntatore all'`i-node` del file salvato nella _**Tabella dei File Attivi**_, copiata dalla memoria di massa.
+A livello globale il _kernel_ mantiene una **_Tabella dei File Aperti del Sistema_** (`TFAS`) allocata nella _user structure del processo_. Questa tabella contiene un elemento per **_ogni file aperto nel sistema_**, individuato da un indice intero detto **_file descriptor_** `fd`. Questo elemento non è altro che un puntatore all'`i-node` del file salvato nella _**Tabella dei File Attivi**_, copiata dalla memoria di massa.
 
 <img class="" src="./images/File System/kernel-data-structure-for-file-access.png">
 
-
-Più precisamento viene allocato un elemento nella `TFAS` per ogni **operaizone di apertura di file**. Ciò implica che se due processi distinti aprono lo stesso file, avremo **_due elementi distinti nella `TFAS`_**, ma comunque uno solo nella _tabella dei file attivi_
+Più precisamento viene allocato un elemento nella `TFAS` per ogni **operaizone di apertura di file**. Ciò implica che se due processi distinti aprono lo stesso file, avremo **_due elementi distinti nella `TFAS`_**, ma comunque uno solo nella _tabella dei file attivi_.
 Se invece un processo genera dei figli (ad esempio con una `fork()`) questi **_condivideranno con il padre i vari file descriptor_** e di conseguenza anche gli `I/O Pointer`.
 
 <img class="" src="./images/File System/father-son-pointer-sharing.png">
 
-
 Di default sono aperti automaticamente i file speciali di _standard input_ `STD_IN`, _standard output_ `STD_OUT` e _standard error_ `STD_ERR`.
 
-Per ulteriori informazioni su come manipolare i file da codice è possibile [consultare gli appunti di laboratorio](./laboratorio/Filesystem.md).
-
-## 2.4. Dispositivo Virtuale
+Per ulteriori informazioni su come manipolare i file da codice è possibile [consultare gli appunti di laboratorio](/Appunti-Sistemi-Operativi-2025-2026/laboratorio/Filesystem).
