@@ -532,7 +532,7 @@ Poiché i _job_ ereditano il process group del terminale che li inizializza, se 
 
 Per fare in modo che il segnale `SIGHUP` non porti alla terminazione di un _job_ è possibile utilizzare due strumenti:
 ```bash
-nohub comando
+nohup comando
 ```
 
 In questo modo il _job eseguito_ è immune a `SIGHUP`.
