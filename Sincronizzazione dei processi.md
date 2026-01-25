@@ -593,7 +593,7 @@ DiningPhilosophers.putdown(i);
 
 Questo metodo, che non si basa direttamente sul possesso delle bacchette, ma piuttosto sul fatto che:
 - Se i miei vicini sono `THINKING` io posso mangiare
-- Se almeno uno dei miei vicini è `EATING`, mi metto in attesa in quanto prima o poi restituirà la bacchetta che mi serve (questo potrebbe provocare _starvation_, in quanto basta che i due vicini siano sempre `EATING` per evitare che lo possa diventare)
+- Se almeno uno dei miei vicini è `EATING` passo allo stato `HUNGRY` e mi metto in attesa, in quanto prima o poi restituirà la bacchetta che mi serve (questo potrebbe provocare _starvation_, in quanto basta che i due vicini siano sempre `EATING` per evitare che lo possa diventare)
 - Se entrambi i miei vicini sono `HUNGRY` significa che io possono mangiare
 
 L'ultimo di questi casi avviene proprio perché quando qualcuno è `HUNGRY` **_non prende nessuna bacchetta finché non le può prendere entrambe_**.
@@ -815,7 +815,7 @@ Questo comporta che quando un processo richiede una risorsa, il sistema debba de
 Si dice **_stato sicuro_**:
 > Un sistema nel quale esiste una sequenza &lt;$P_1, P_2,...,P_n$&gt; di **_tutti i processi nel sistema_** tali che _per ogni $P_i$ le risorse che $P_i$ può richiedere possono essere soddisfatte con_:
 > - **Le risorse attualmente disponibili**
-> - **Le risorse utilizzate da tutti i processi** $P_j \;(j < i)$
+> - **Le risorse utilizzate da tutti i processi** $P_j$ con $j < i$
 
 Questo comporta che se le richieste di $P_i$ non fossero disponibili immediatamente, $P_i$ deve essere messo in attesa finché il processo che lo precede nella sequenza $P_{i-1}$ non è terminato. Quando $P_{i-1}$ sarà terminato, allora $P_i$ può ottenere le risorse richieste, eseguire e renderle nuovamente disponibili. Quando $P_i$ terminetà allora $P_{i+1}$ potrà ottenere le risorse a lui necessarie e così via...
 
@@ -984,7 +984,7 @@ Al tempo $t_0$ `available = {3, 3, 2}`.
 
 Eseguendo l'algoritmo possiamo constatare che la sequenza &lt;$P_1, P_3, P_4, P_2, P_0$&gt; soddisfa il criterio di sicurezza, quindi il sistema è in uno **_stato sicuro_**.
 
-Se $P_1$ richiedesse `{1, 0, 2}` (richiesta garantibile in quanto `{1, 0, 2} <= {3, 3, 2}`)trasformerebbe lo stato totale in:
+Se $P_1$ richiedesse `{1, 0, 2}` (richiesta garantibile in quanto `{1, 0, 2} <= {3, 3, 2}`) trasformerebbe lo stato totale in:
 
 <div class="flexbox" markdown="1">
 
@@ -1143,7 +1143,7 @@ Un altra soluzione intermedia può essere quella di eseguire gli algoritmi **_og
 
 Una volta rilevato il _deadlock_, dobbiamo decidere come fare per ripristinare il sistema.
 
-Un metodo sicuramente funzionante è quello di **_abortire tutti i processi in deadlock_**. Questa soluzione, seppur semplice è efficace, è estremamente drastica e non sempre strettamente necessaria.
+Un metodo sicuramente funzionante è quello di **_abortire tutti i processi in deadlock_**. Questa soluzione, seppur semplice ed efficace, è estremamente drastica e non sempre strettamente necessaria.
 
 Un metodo più "tranquillo" è quello di **_abortire un processo alla volta_** finché non riusciamo a eliminare il ciclo.
 
