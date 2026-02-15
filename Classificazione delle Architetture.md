@@ -92,7 +92,7 @@ Alcuni esempi di architetture `SIMD`:
 
 I programmi che beneficiano dell'architettura `SIMD`, ad esempio per lavorare su grandi vettori, possono essere eseguiti, con opportune ma comunque piccole modifiche, da processori `SISD`.
 
-Infatti avendo un operazione tra vettori `c = a + b`, il compilatore può tradurla in `for(...) c[i] = a[i] + b[i]`.
+Infatti avendo un operazione tra vettori `c = a + b`, il compilatore può tradurla in `for (...) c[i] = a[i] + b[i]`.
 
 
 ## 2.3. Macchine MISD

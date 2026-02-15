@@ -7,8 +7,8 @@ title: Utenti e Gruppi
 - [1. Indice](#1-indice)
 - [2. Utenti e Gruppi](#2-utenti-e-gruppi)
 - [3. Permessi di accesso al filesystem](#3-permessi-di-accesso-al-filesystem)
-	- [3.1. Privilegi di un processo](#31-privilegi-di-un-processo)
-	- [3.2. Cambiare proprietari](#32-cambiare-proprietari)
+  - [3.1. Privilegi di un processo](#31-privilegi-di-un-processo)
+  - [3.2. Cambiare proprietari](#32-cambiare-proprietari)
 - [4. File di configurazione utenti](#4-file-di-configurazione-utenti)
 - [5. Comandi per la gestione dei gruppi](#5-comandi-per-la-gestione-dei-gruppi)
 
@@ -34,16 +34,16 @@ Il comando `passwd` permette di cambiare file di sistema pur non avendo i privil
 
 Per la gestione di un utente:
 ```bash
-adduser username	# crea un nuovo utente
+useradd username	# crea un nuovo utente
 
-deluser username 	# elimina un utente già esistente
+userdel username 	# elimina un utente già esistente
 ```
 
 Per la gestione di un gruppo, **da root**
 ```bash
-addgroup groupName
+groupadd groupName
 
-addgroup groupName
+groupdel groupName
 ```
 
 # 3. Permessi di accesso al filesystem
@@ -73,7 +73,7 @@ Stessa cosa accade per le directory:
 
 Per visualizzare i permessi di un file o di una directory, si utilizza il comando `ls -l`. Per ogni voce il formato sarà il seguente:
 
-```
+```example
 ┌─── Tipo (d=directory, -=file, l=link)
 │
 │ ┌────────── Permessi Owner

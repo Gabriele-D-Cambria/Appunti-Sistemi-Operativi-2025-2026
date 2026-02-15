@@ -178,13 +178,13 @@ Possiamo quindi vedere un esempio di **comunicazione diretta simmetrica**:
 
 ```cpp
 pid C = /*......*/;
-main(){
+main() {
 	msg M;
 	do{
 		produci(&M);
 		// ...
 		send(C, M);
-	}while(!fine);
+	} while (!fine);
 }
 ```
 
@@ -194,13 +194,13 @@ main(){
 
 ```cpp
 pid P = /*.......*/;
-main(){
+main() {
 	msg M;
 	do{
 		receive(P, &M);
 		// ...
 		consuma(M);
-	}while(!fine);
+	} while (!fine);
 }
 ```
 </div>
@@ -214,13 +214,13 @@ Nel caso di **comunicazione diretta asimmetrica**:
 
 ```cpp
 pid C = /*......*/;
-main(){
+main() {
 	msg M;
 	do{
 		produci(&M);
 		// ...
 		send(C, M);
-	}while(!fine);
+	} while (!fine);
 }
 ```
 
@@ -229,7 +229,7 @@ main(){
 <p class="p">Consumatore</p>
 
 ```cpp
-main(){
+main() {
 	msg M;
 	pid id;
 	do{
@@ -237,7 +237,7 @@ main(){
 		receive(&id, &M);
 		// ...
 		consuma(M);
-	}while(!fine);
+	} while (!fine);
 }
 ```
 </div>
@@ -292,7 +292,7 @@ do{
 		// add the item
 	signal(mutex);
 	signal(msg);
-}while(true);
+} while (true);
 ```
 </div>
 <div class="top">
@@ -306,7 +306,7 @@ do{
 		// remove item
 	signal(mutex);
 	signal(buf);
-}while(true);
+} while (true);
 ```
 
 </div>
@@ -347,7 +347,7 @@ do{
 	// scritture
 
 	signal(wrt);
-}while(true);
+} while (true);
 ```
 </div>
 <div class="top">
@@ -360,7 +360,7 @@ do{
 		// Mi segno come lettore
 		readcount++;
 		// Se sono il primo lettore
-		if(readcount == 1){
+		if (readcount == 1) {
 			// Verifico che non ci siano scrittori
 			// E impedisco a eventuali scrittori futuri di accedere
 			wait(wrt);
@@ -373,12 +373,12 @@ do{
 	// Mi rimuovo tra i processi lettori
 	readcount--;
 	// Se non è rimasto più nessuno
-	if(readcount == 0){
+	if (readcount == 0) {
 		// Notifico ad eventuali scrittori futuri che possono accedere
 		signal(wrt);
 	}
 	signal(mutex);
-}while(true);
+} while (true);
 ```
 </div>
 </div>
@@ -450,7 +450,7 @@ proc philosopher{
 		signal(chopstick[i]);
 
 		// thinking
-	}while(true);
+	} while (true);
 }
 ```
 
@@ -495,15 +495,15 @@ Un monitor ha la seguente struttura:
 ```cpp
 monitor monitorName{
 	// shared variable declarations
-	procedure P1(/*...*/){
+	procedure P1(/*...*/) {
 		// ...
 	}
 	// ...
-	procedure Pn(/*...*/){
+	procedure Pn(/*...*/) {
 		// ...
 	}
 
-	initialization_code(/*...*/){
+	initialization_code(/*...*/) {
 		// ...
 	}
 }
@@ -552,30 +552,30 @@ monitor DiningPhilosophers{
 	enum {THINKING, HUNGRY, EATING} state[5];
 	condition self[5];
 
-	void pickup(int i){
+	void pickup(int i) {
 		state[i] = HUNGRY;
 		test(i);
-		if(state[i] != EATING)
+		if (state[i] != EATING)
 			self[i].wait();
 	}
 
-	void putdown(int i){
+	void putdown(int i) {
 		state[i] = THINKING;
 		test((i-1) % 5);
 		test((i+1) % 5);
 	}
 
-	void test(int i){
-		if(	(state[(i-1) % 5] != EATING) &&
+	void test(int i) {
+		if (	(state[(i-1) % 5] != EATING) &&
 			(state[i] == HUNGRY) &&
-			(state[(i+1) & 5] != EATING)){
+			(state[(i+1) % 5] != EATING)) {
 				state[i] = EATING;
 				self[i].signal();
 			}
 	}
 
-	initialization_code(){
-		for(int i = 0; i < 5; ++i){
+	initialization_code() {
+		for (int i = 0; i < 5; ++i) {
 			state[i] = THINKING;
 		}
 	}
@@ -625,7 +625,7 @@ wait(mutex);
 
 // corpo della procedura
 
-if(next_count > 0)
+if (next_count > 0)
 	signal(next);
 else
 	signal(mutex);
@@ -637,9 +637,9 @@ class condition{
 	sem x_sem = sem_ini(0);
 	int x_count = 0;
 
-	public void wait(){
+	public void wait() {
 		x_count++;
-		if(next_count > 0)
+		if (next_count > 0)
 			signal(next);
 		else
 			signal(mutex);
@@ -648,8 +648,8 @@ class condition{
 		x_count--;
 	}
 
-	public void signal(){
-		if(x_count > 0){
+	public void signal() {
+		if (x_count > 0) {
 			next_count++;
 			signal(x_sem);
 			wait(next);
@@ -672,19 +672,19 @@ monitor ResourceAllocator{
 	bool busy;
 	condition x;
 
-	void acquire(int time){
-		while(busy){
+	void acquire(int time) {
+		while (busy) {
 			x.wait(time);
 		}
 		busy = true;
 	}
 
-	void release(){
+	void release() {
 		busy = false;
 		x.signal();
 	}
 
-	intialization_code(){
+	intialization_code() {
 		busy = false;
 	}
 }
@@ -861,36 +861,36 @@ La relazione tra queste variabili è la seguente: `need[i,j] = max[i,j] - alloca
 
 Supponendo di avere queste funzioni di supporto:
 ```cpp
-int* copyArray(int* ar2){
+int* copyArray(int* ar2) {
 	int* ar1 = new int[M];
 
-	for(int j = 0; j < M; ++j){
+	for (int j = 0; j < M; ++j) {
 		ar1[j] = ar2[j];
 	}
 
 	return ar1;
 }
 
-bool* initAll(bool val){
+bool* initAll(bool val) {
 	bool* ar = new bool[M];
 
-	for(int j = 0; j < M; ++j){
+	for (int j = 0; j < M; ++j) {
 		ar[j] = val;
 	}
 
 	return ar;
 }
 
-bool compareRow(int* ar1, int* ar2){
-	for(int j = 0; j < M; ++j){
-		if(ar1[j] > ar2)
+bool compareRow(int* ar1, int* ar2) {
+	for (int j = 0; j < M; ++j) {
+		if (ar1[j] > ar2)
 			return false;
 	}
 	return true;
 }
 
-void sumByElement(int* ar1, int* ar2, bool minus){
-	for(int j = 0; j < M; ++j){
+void sumByElement(int* ar1, int* ar2, bool minus) {
+	for (int j = 0; j < M; ++j) {
 		ar1[j] += ((minus)?  -ar2[j] : ar2[j]);
 	}
 }
@@ -898,7 +898,7 @@ void sumByElement(int* ar1, int* ar2, bool minus){
 
 L'algoritmo di verifica dello stato sicuro è qualcosa del genere:
 ```cpp
-bool isSafe(){
+bool isSafe() {
 	// step 1
 	int* work = copyArray(available);
 	bool* finish = initAll(false);
@@ -909,22 +909,22 @@ bool isSafe(){
 		// step 2
 		i = 0;
 		skipToFour = true;
-		for(; i < N; ++i){
-			if(!finish[i] && compareRow(need[i], work)){
+		for (; i < N; ++i) {
+			if (!finish[i] && compareRow(need[i], work)) {
 				skipToFour = false;
 				break;
 			}
 		}
 
-		if(!skipToFour){
+		if (!skipToFour) {
 			// step 3
 			sumByElement(work, allocation[i], false);
 			finish[i] = true;
 		}
-	}while(!skipToFour)
+	} while (!skipToFour)
 
-	for(int j = 0; j < M; ++j){
-		if(!finish[j])
+	for (int j = 0; j < M; ++j) {
+		if (!finish[j])
 			return false;
 	}
 
@@ -934,22 +934,22 @@ bool isSafe(){
 
 L'algoritmo di richiesta di una risorsa di un processo `i` diventa quindi:
 ```cpp
-void bankerAlgorithm(int i){
-	if(!compareRow(request[i], need[i])){
+void bankerAlgorithm(int i) {
+	if (!compareRow(request[i], need[i])) {
 		throw new Exception("Il processo ha richiesto più di quanto aveva detto avrebbe fatto");
 	}
 
-	if(compareRow(request[i], available)){
+	if (compareRow(request[i], available)) {
 		// Almeno una delle risorse non è disponibile
 		wait();
 	}
 
-	while(true){
+	while (true) {
 		sumByElement(available, request[i], true);
 		sumByElement(allocation[i], request[i], false);
 		sumByElement(need[i], request[i], true);
 
-		if(!isSafe()){
+		if (!isSafe()) {
 			// oggetto allocato
 			return;
 		}
@@ -1038,16 +1038,16 @@ In caso di risorse con istanze multiple introduciamo delle nuove variabili:
 
 Un esempio di _detection algorithm_ (ipotizzando di avere le solite [_funzioni di supporto_](#support-function)):
 ```cpp
-bool* isInDeadlock(){
+bool* isInDeadlock() {
 	bool* deadlock_array = initAll(false);
 
 	// step 1
 	int* work = copyArray(available);
 	bool* finish = initAll(true);
 
-	for(int i = 0; i < n; ++i){
-		for(int j = 0; j < m; ++j){
-			if(allocation[i][j] != 0){
+	for (int i = 0; i < n; ++i) {
+		for (int j = 0; j < m; ++j) {
+			if (allocation[i][j] != 0) {
 				finish[i] = false;
 				break;
 			}
@@ -1062,22 +1062,22 @@ bool* isInDeadlock(){
 		i = 0;
 		skipToFour = true;
 
-		for(; i < n; ++i){
-			if(!finish[i] && compareRow(request[i], work)){
+		for (; i < n; ++i) {
+			if (!finish[i] && compareRow(request[i], work)) {
 				skipToFour = false;
 				break;
 			}
 		}
 
 		// step 3
-		if(!skipToFour){
+		if (!skipToFour) {
 			work = sumByElement(work, allocation[i], false);
 			finish[i] = true;
 		}
-	}while(!skipToFour);
+	} while (!skipToFour);
 
 	// spet 4
-	for(int i = 0; i < n; ++i){
+	for (int i = 0; i < n; ++i) {
 		deadlock_array[i] = !finish[i];
 	}
 

@@ -106,13 +106,13 @@ Di seguito possiamo vedere un esempio di creazione di un thread:
 #include <stdlib.h>
 
 /* Corpo del thread */
-void* tr_code(void* arg){
+void* tr_code(void* arg) {
 	printf("Hello World! My arg is %d\n", *(int*)arg);
 	free(arg);
 	pthread_exit(NULL);
 }
 
-int main(){
+int main() {
 	pthread_t t1, t2;
 	int* arg1 = (int*)malloc(sizeof(int));
 	int* arg2 = (int*)malloc(sizeof(int));
@@ -124,14 +124,14 @@ int main(){
 
 	/* Creo il primo thread passandogli `1` come argomento */
 	ret = pthread_create(&tr1, NULL, tr_code, arg1);
-	if(ret){
+	if (ret) {
 		printf("Error: return code from pthread_create is %d\n", ret);
 		exit(-1);
 	}
 
 	/* Creo il secondo thread passandogli `2` come argomento */
 	ret = pthread_create(&tr2, NULL, tr_code, arg2);
-	if(ret){
+	if (ret) {
 		printf("Error: return code from pthread_create is %d\n", ret);
 		exit(-1);
 	}
@@ -149,15 +149,15 @@ Possiamo generalizzare la creazione di `NTHREADS` utilizzando una `#define`:
 
 // ... thread code
 
-int main(){
+int main() {
 	pthread_t tr[NTHREADS];
 	int* args[NTHREADS];
 	int ret;
-	for(int i = 0; i < NTHREADS; ++i){
+	for (int i = 0; i < NTHREADS; ++i) {
 		args[i] = (int*)malloc(sizeof(int));
 		args[i] = i;
 		ret = pthread_create(&tr[i], NULL, tr_code, args[i]);
-		if(ret){
+		if (ret) {
 			printf("Error: return code from pthread_create is %d\n", ret);
 			exit(-1);
 		}
@@ -208,14 +208,14 @@ pthread_mutex_t M;
 pthread_mutex_init(&M, NULL);
 
 // Voglio utilizzare la risorsa
-if(pthread_mutex_lock(&M)){
+if (pthread_mutex_lock(&M)) {
 	// Errore nella presa del lock
 }
 
 // Utilizzo la risorsa
 
 // Rilascio la risorsa
-if(pthread_mutex_unlock(&M)){
+if (pthread_mutex_unlock(&M)) {
 	// Errore nel rilascio del lock
 }
 // Risorsa rilasciata
@@ -253,7 +253,7 @@ La sospensione viene utilizzata al verificarsi di una particolare condizione log
 * Si utilizza while perché il thread potrebbe essere risvegliato anche se la condizione logica non è stata modificata
 * È quindi necessario ricontrollare la condizione dopo essere statis svegliati
 */
-while(condizione_logica){
+while (condizione_logica) {
 	wait(condition_variable);
 }
 ```
@@ -325,7 +325,7 @@ typedef struct {
 } risorsa;
 
 risorsa r;
-int main(){
+int main() {
 	pthread_mutex_init(&r.M, NULL);
 
 	pthread_cond_init(&r.FULL, NULL);
@@ -345,7 +345,7 @@ int main(){
 
 ptrhead_mutex_lock(&r.M);
 
-while(r.cont == 0){
+while (r.cont == 0) {
 	pthread_cond_wait(&r.EMPTY, &r.M);
 }
 
@@ -373,7 +373,7 @@ pthread_mutex_unlock(&r.M);
 
 ptrhead_mutex_lock(&r.M);
 
-while(r.cont == BUFFER_SIZE){
+while (r.cont == BUFFER_SIZE) {
 	pthread_cond_wait(&r.FULL, &r.M);
 }
 
@@ -416,7 +416,7 @@ Nella fase di ingresso avremo:
 
 pthread_mutex_lock(&M);
 
-while(n_users == MAX_T){
+while (n_users == MAX_T) {
 	pthread_cond_wait(&FULL, &M);
 }
 

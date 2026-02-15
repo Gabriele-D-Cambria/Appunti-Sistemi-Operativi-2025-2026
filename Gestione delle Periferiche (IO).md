@@ -148,9 +148,9 @@ Normalmente un dispositivo si trova in _stand-by_, in attesa che il bit di start
 Una volta attivato il dispositivo esegue il comando e alla fine registra l'evento ponendo a uno il relativo bit di flag, procedendo poi a tornare in attesa di una nuova attivazione.
 Possiamo quindi riassumere il comportamento con questo codice:
 ```c
-while(true){
+while (true) {
 	// Attendo l'invio di un comando
-	while(Start == 0);
+	while (Start == 0);
 
 	// Eseguo il comando
 	executeComand();
@@ -167,7 +167,7 @@ semaforo dato_disponibile = 0;
 
 // ...
 
-for(int i = 0; i < n; ++i){
+for (int i = 0; i < n; ++i) {
 	/*
 	* preparo il comando:
 	*	assemblo in un registro della CPU
@@ -269,7 +269,7 @@ La funzione di lettura:
 * @param cont il numero di dati da leggere
 * @return il numero di dati letti, -1 in caso di terminazione erronea
 */
-int read(int disp, char* pbuf, int cont){
+int read(int disp, char* pbuf, int cont) {
 	// descrtittore è la lista dei descrittori indicizzati tramite il numero dispositivo
 	descrittore[disp].contatore = cont;
 	descrittore[disp].puntatore = pbuf;
@@ -298,11 +298,11 @@ Se invece l'interruzione fosse dovuta ad errore:
 - Se non è mascherabile, la _routine_ setta l'errore nel campo `esito` e termina riattivando il processo applicativo.
 
 ```c
-void inth(){
+void inth() {
 	char b;
 	<leggo il registro di stato del controllore>
 
-	if(ERROR_BIT == 0){
+	if (ERROR_BIT == 0) {
 		// non ci sono errori
 
 		<leggo il registro dei dati assegnando la variabile locale b>
@@ -310,10 +310,10 @@ void inth(){
 		*(descrittore[disp]).puntatore = b;
 		++(descrittore[disp].puntatore);
 		--(descrittore[disp].contatore);
-		if(descrittore[disp].contatore != 0){
+		if (descrittore[disp].contatore != 0) {
 			<riattivo il dispositivo>
 		}
-		else{
+		else {
 			descrittore[disp].esito = CORRECT_TERMINATION;
 			<disattivo il dispositivo>
 			
@@ -321,11 +321,11 @@ void inth(){
 			descrittore[disp].dato_disponibile.signal();
 		}
 	}
-	else{
+	else {
 		// presenza di errori
 		<routine di gestione errore>
 
-		if(<errore non recuperabile>){
+		if (<errore non recuperabile>) {
 			descrittore[disp].esito = <codice errore>;
 		}
 
@@ -371,7 +371,7 @@ Dal punto di vista hardware il controllore di un timer contiene:
 Ciascun semaforo viene utilizzato per bloccare il corrispondente processo che invocca la primitiva `delay`.
 
 ```c
-void delay(int n){
+void delay(int n) {
 	int proc;
 	proc = <indice del processo in esecuzione>;
 
@@ -380,11 +380,11 @@ void delay(int n){
 	descrittore.fine_attesa[proc].wait();
 }
 
-void inth(){
-	for(int i = 0; i < N; ++i){
-		if(descrittore.ritardo[i] != 0){
+void inth() {
+	for (int i = 0; i < N; ++i) {
+		if (descrittore.ritardo[i] != 0) {
 			--(descrittore.ritardo[i]);
-			if(descrittore.ritardo[i] == 0){
+			if (descrittore.ritardo[i] == 0) {
 				descrittore.fine_attesa[i].signal();
 			}
 		}

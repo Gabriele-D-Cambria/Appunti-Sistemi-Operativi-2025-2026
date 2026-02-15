@@ -40,9 +40,9 @@ Il processo `UNIX` mantiene spazi di indirizzamento separati:
 
 La politica di assegnamento della **CPU** ai processi adottata da UNIX è basata sulla divisione di tempo, facendo attraversare loro vari stati:
 - `init`
-- `printo`
+- `pronto`
 - `running`
-- `swapped`
+- `swapped` (`swapped pronto`/`swapped bloccato`)
 - `sleep`/`bloccato`
 - `zombie`
 - `terminato`
@@ -368,7 +368,7 @@ Alcune opzioni principali disponibili in `Linux` sono nella seguente tabella:
 
 |   Opzione   | Descrizione                                                          |
 | :---------: | :------------------------------------------------------------------- |
-| `-u utente` | Visualizza i processi dell'utente sepcificato                        |
+| `-u utente` | Visualizza i processi dell'utente specificato                        |
 |     `u`     | Formato output utile all'analisi dell'utilizzo delle risorse         |
 |     `a`     | Processi di tutti gli utenti                                         |
 |     `x`     | Visualizza anche i processi che non sono stati generati da terminali |
@@ -401,22 +401,22 @@ Per visualizzare l'albero dei processi si utilizza il comando:
 ```bash
 pstree
 ```
-```
+```example
 systemd─┬─ModemManager───3*[{ModemManager}]
-    	├─NetworkManager───3*[{NetworkManager}]
-    	├─accounts-daemon───3*[{accounts-daemon}]
-    	├─at-spi-bus-laun─┬─dbus-daemon
-    	│                 └─4*[{at-spi-bus-laun}]
-    	├─at-spi2-registr───3*[{at-spi2-registr}]
-    	├─avahi-daemon───avahi-daemon
-    	├─colord───3*[{colord}]
-    	├─cron
-    	├─cups-browsed───3*[{cups-browsed}]
-    	├─cupsd
-    	├─dbus-daemon
-    	├─gdm3─┬─gdm-session-wor─┬─gdm-wayland-ses─┬─dbus-run-sessio─┬─dbus-daemon
-    	│      │                 │                 │                 └─gnome-session-b─┬─gnome-shell─┬─Xwayland
-       ...    ...     			...			   	  ...								  ...			...
+		├─NetworkManager───3*[{NetworkManager}]
+		├─accounts-daemon───3*[{accounts-daemon}]
+		├─at-spi-bus-laun─┬─dbus-daemon
+		│                 └─4*[{at-spi-bus-laun}]
+		├─at-spi2-registr───3*[{at-spi2-registr}]
+		├─avahi-daemon───avahi-daemon
+		├─colord───3*[{colord}]
+		├─cron
+		├─cups-browsed───3*[{cups-browsed}]
+		├─cupsd
+		├─dbus-daemon
+		├─gdm3─┬─gdm-session-wor─┬─gdm-wayland-ses─┬─dbus-run-sessio─┬─dbus-daemon
+		│      │                 │                 │                 └─gnome-session-b─┬─gnome-shell─┬─Xwayland
+	   ...    ...     			...			   	  ...								  ...			...
 ```
 
 Un proccesso ha **_7 identificatori_**.
@@ -538,7 +538,7 @@ nohup comando
 In questo modo il _job eseguito_ è immune a `SIGHUP`.
 Tuttavia comporta due conseguenze per il _job_:
 - **Non ha più accesso allo `stdin`**, in caso di lettura ottiene `EOF`
-- Lo `stdout` viene **rediretto su un file chiamato** `nohup.out`
+- Lo `stdout` viene **rediretto su un file chiamato** `nohup.out` creato nella locazione nel quale si trova il terminale quando esegue il comando
 
 ```bash
 disown %JOB_ID

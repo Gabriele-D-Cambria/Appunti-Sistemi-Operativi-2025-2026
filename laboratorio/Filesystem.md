@@ -84,7 +84,7 @@ Il _filesystem_ permette di **definire più _hard link_ associato ad un `i-node`
 </tr></thead>
 <tbody>
 <tr>
-	<th>Eliminazione o spostamento dell'<em>hard link</em></th>
+	<th>Eliminazione/spostamento<br/>dell'<em>hard link</em></th>
 	<td>Non ha alcun effetto sugli altri <em>hard link</em></td>
 	<td>Il <em>soft link</em> non è più in grado di accedere al file</td>
 </tr>
@@ -216,15 +216,15 @@ Vediamo un sempio di lettura di lettura testo da file e stampa a video con buffe
 
 #define BUF_SIZE 64
 
-int main(int argc, char** argv){
-	if(argc < 2){
+int main(int argc, char** argv) {
+	if (argc < 2) {
 		printf("Usage: %s FILENAME\n", argv[0]);
 		exit(-1);
 	}
 
 	int fd = open(argv[1], O_RDONLY);
 
-	if(fd < 0){
+	if (fd < 0) {
 		perror("Errore nella open");
 		exit(-1);
 	}
@@ -233,14 +233,14 @@ int main(int argc, char** argv){
 
 	ssize_t nread;
 
-	while((nread = read(fd, buffer, BUF_SIZE-1)) > 0){
+	while ((nread = read(fd, buffer, BUF_SIZE-1)) > 0) {
 		buffer[nread] = '\0';
 		printf("%s", buffer);
 	}
 
 	close(fd);
 
-	if(nread < 0){
+	if (nread < 0) {
 		perror("Errore nella read");
 		exit(-1);
 	}
@@ -261,9 +261,9 @@ Con la `read` invece viene letta **_al più la quantità di dati chiesta_**.
 I processi possono comunicare sfruttando il meccanismo delle `pipe`.
 
 È un tipo di _comunicazione indiretta_ senza naming esplicito, che realizza il concetto di _mailbox_.
-Attraverso le `pipe` si possono accordare messaggi in buffer di dimensioni predefinite, che saranno estratti con politica `FIFO`,.
+Attraverso le `pipe` si possono accordare messaggi in buffer di dimensioni predefinite, che saranno estratti con politica `FIFO`.
 
-La `pipe` è quindi un canale monodirezionale a due estremi (uno per la lettura e uno per la scrittura) che hanno associati un `file descriptor`.
+La `pipe` è quindi un canale monodirezionale a due estremi associati a due `file descriptor` diversi (uno per la lettura e uno per la scrittura).
 
 ```c
 /**
@@ -286,9 +286,7 @@ Dobbiamo sottolineare che il comportamento di `read` sull'estremità della pipe 
 
 Analogamente, la `write` sull'estremità della pipe **_è bloccante se il buffer è pieno_**, ma restituisce **_errore_** se non ci sono lettori attivi.
 
-Di conseguenza diventa importante **_chiudere gli estremi non utilizzati da un processo_**. Ovvero `pipefd[1]` per i lettori e `pipefd[0]` per gli scrittori.
-
-In questo modo possiamo evitare _deadlock_ e comportamenti inattesi.
+Di conseguenza diventa importante **_chiudere gli estremi non utilizzati da un processo_**, ovvero `pipefd[1]` per i lettori e `pipefd[0]` per gli scrittori, così da evitare _deadlock_ e comportamenti inattesi.
 
 # 3. Pilotare Applicazioni
 
@@ -316,14 +314,14 @@ int dup2(int target, int newfd)
 È possibile combinare le funzioni `pipe` e `dup2` per redirezionare il flusso dei dati dagli standard verso gli altri `fd`.
 
 ```c
-int main(){
+int main() {
 	int pipe_fd[2];
 	pid_t pid;
 
 	pipe(pipe_fd);
 	pid = fork();
 
-	if(pid == 0){
+	if (pid == 0) {
 		// Figlio che deve scrivere
 		close(pipe_fd[0]);
 
@@ -334,7 +332,7 @@ int main(){
 		// questi verranno rediretti e spostati verso la pipe
 		execl("bin/ls", "ls", "-l", NULL);
 	}
-	if(pid > 0){
+	if (pid > 0) {
 		// padre lettore
 		char buffer[1024];
 		int nread = -1;
@@ -342,7 +340,7 @@ int main(){
 
 		close(pipe_fd[1]);
 
-		while(nread != 0){
+		while (nread != 0) {
 			nread = read(pipe_fd[0], &buffer[index], sizeof(buffer) - 1);
 			buffer[index + nread] = '\0';
 			index += nread;
@@ -374,7 +372,7 @@ pipe(StF);
 
 pid = fork();
 
-if(pid == 0){
+if (pid == 0) {
 	// Rispetto a quello che mi da il padre sono in lettura
 	close(FtS[1]);
 
@@ -395,7 +393,7 @@ if(pid == 0){
 
 	execl("<path_applicazione>", "<nome_applicazione>", NULL);
 }
-else{
+else {
 	// padre
 	char sendBuf[BUFFER_SIZE];
 	char recvBuf[BUFFER_SIZE];

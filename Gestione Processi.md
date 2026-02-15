@@ -707,7 +707,7 @@ Le sezioni barrate sono le sezioni di **CPU-idle**.
 </div>
 
 Questo algoritmo è **ottimo** nella classe degli algoritmi a priorità statica.
-In particolare, esiste òa proprietà che:
+In particolare, esiste la proprietà che:
 > È possibile schedulare degli eventi a priorità statica **_se e solo se_** possiamo farlo tramite `RM`.
 
 ### 3.7.2. Valutazione Esistenza dell'algoritmo
@@ -742,7 +742,7 @@ $$
 	\quad U = \frac{1}{2} + \frac{1}{5} = \frac{7}{10} \le 1
 $$
 
-Operativamente nella realtà la formula è leggermente diversa, dato che non possiamo far coincidere la deadline con il periodo, rendendo la formula r9eale qualcosa del genere:
+Operativamente nella realtà la formula è leggermente diversa, dato che non possiamo far coincidere la deadline con il periodo, rendendo la formula reale qualcosa del genere:
 $$
 	\quad U \le 1 - \alpha
 $$

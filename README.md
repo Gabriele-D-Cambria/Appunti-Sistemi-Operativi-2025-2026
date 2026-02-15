@@ -63,6 +63,20 @@ Nella parte pratica utilizzeremo una vm basata su _Ubuntu 24_ sulla quale vedrem
 6. [Il file system](./Il%20file%20system)
 7. [Protezione e sicurezza](./Protezione%20e%20sicurezza)
 
+## ❓ Domande e Risposte
+
+È disponibile una raccolta di **[Domande e Risposte](./Domande%20e%20Risposte)** che copre i principali argomenti del corso, organizzata per facilitare la preparazione all'esame.
+La raccolta include sia domande effettivamente poste dal professore durante gli anni precedenti, sia altre elaborate autonomamente a partire dai contenuti del corso.
+
+⚠️ **Avvertenze importanti:**
+- Alcune domande sono ancora **in fase di completamento** e potrebbero non avere una risposta pubblica
+- Le risposte fornite potrebbero contenere **errori o imprecisioni** in quanto estrapolate dai file di appunti markdown presenti in questo repository
+- Il materiale è in **continuo aggiornamento** e miglioramento
+- Questa selezione **non sostituisce** lo studio del materiale ufficiale del corso
+- Per qualsiasi dubbio, fare sempre **riferimento alle lezioni** e al materiale del professore
+- Sono disponibile ad aggiornare la raccolta con nuove domande dai prossimi appelli. Per contribuire è possibile inviare una mail al [seguente indirizzo](mailto:gabrielecambria04@gmail.com?subject=Integrazione%20domande%20calcolatori%20elettronici) oppure creare una `pull request` aggiungendo le domande nella sezione appropriata.
+
+
 ## 📜 Disclaimer
 
 Questi appunti sono personali e destinati esclusivamente all'uso didattico. 

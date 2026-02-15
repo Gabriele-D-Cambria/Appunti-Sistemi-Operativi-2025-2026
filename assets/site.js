@@ -16,10 +16,10 @@ function processMathBlocks() {
     // Trova tutti i contenitori MathJax
     mathContainers.forEach(function(mathContainer) {
         // Controlla se contiene un elemento mjx-mspace
-        if(!mathContainer.classList.contains("math-display") && !mathContainer.classList.contains("math-inline")){
+        if (!mathContainer.classList.contains("math-display") && !mathContainer.classList.contains("math-inline")) {
             const mspaceElements = mathContainer.querySelectorAll('mjx-mspace');
             
-            if(mspaceElements.length){
+            if (mspaceElements.length) {
                 const br = document.createElement('br');
                 mathContainer.parentNode.insertBefore(br, mathContainer);
                 mathContainer.classList.add('math-display');
@@ -29,7 +29,7 @@ function processMathBlocks() {
                     mspace.parentNode.replaceChild(br, mspace);
                 });
             }
-            else{
+            else {
                 mathContainer.classList.add('math-inline');
             }
         }
