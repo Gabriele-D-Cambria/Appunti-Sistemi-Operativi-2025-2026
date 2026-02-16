@@ -159,10 +159,10 @@ I processi assumono dei ruoli: _mittente_ (`send()`) e _destinatario_ (`receive(
 Lo strumento più elementare è quello basato su due primitive:
 - `send(dest, message)`: permette di inviare un messaggio ad un destinatario. L'invio può essere di tre tipi:
   - **Asincrono**: dopo l'invio il mittente non si preoccupa del corretto arrivo del messaggio
-  - **Sincronp**: il mittente si blocca finché non è sicuro che il destinatario ha ottenuto correttamente il messaggio (ad esempio attende un `ACK`)
+  - **Sincrono**: il mittente si blocca finché non è sicuro che il destinatario ha ottenuto correttamente il messaggio (ad esempio attende un `ACK`)
   - **A chiamata di procedura remota**: è utilizzata quando il processo mittente chiede l'esecuzione di un servizio tramite procedura remota al destinatario. In questo caso i due processi oeprano su _due processori_ collegati da una _rete di comunicazione_.
 	Questo tipo di `send` mette il processo mittente in attesa fin quando il servizio richiesto non è terminato e il risultato ricevuto.
-- `receive(src, message)`: permettte di ricevere un messaggio. È possibile specificare una determinata origine, ma non è obbligatorio. Può essere implementana in due modi:
+- `receive(src, message)`: permette di ricevere un messaggio. È possibile specificare una determinata origine, ma non è obbligatorio. Può essere implementana in due modi:
   - **Asincrona**: consente la prosecuzione dell'esecuzione del processo anche in assenza di messaggi
   - **Sincrona**: provoca la sospensione del processo che la esegue nel caso non ci fossero messaggi in attesa di essere serviti. All'arrivo del primo pessaggio il processo viene risvegliato
 
@@ -842,7 +842,7 @@ La regola diventa quindi la seguente:
 
 Permette la _deadlock avoidance_ nel caso di risorse con multiple istanze.
 
-Affinchél'algoritmo possa funzionare richiede che **_ogni processo dichiari a priori il massimo utilizzo di una risorsa che potrà effettuare_**.
+Affinché l'algoritmo possa funzionare richiede che **_ogni processo dichiari a priori il massimo utilizzo di una risorsa che potrà effettuare_**.
 
 L'algoritmo sfrutta infatti la possibilità di mettere in attesa un processo quando questo effettua una richiesta, e si basa sull'assunzione che quando un processo ottiene tutte le risorse, **_dovrà rilasciarle in un tempo finito_**.
 

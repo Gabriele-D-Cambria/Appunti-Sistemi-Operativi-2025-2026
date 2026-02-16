@@ -25,7 +25,7 @@ title: Gestione Processi
 		- [3.7.2. Valutazione Esistenza dell'algoritmo](#372-valutazione-esistenza-dellalgoritmo)
 		- [3.7.3. Earliest Deadline First](#373-earliest-deadline-first)
 - [4. Thread](#4-thread)
-- [5. Processi in Unix](#5-processi-in-unix)
+- [5. Processi in UNIX](#5-processi-in-unix)
 
 # 2. Processi
 
@@ -93,12 +93,11 @@ Per riuscire a mantenere in maniera consistente e corretta le varie informazioni
 In questo modo il singolo processo non si rende conto che la sua esecuzione è stata interrotta, ma crede di aver avuto il possesso della **CPU**, chiamata proprio per questo **CPU virtuale**, per tutto il suo _lifespan_.
 Le **CPU virtuali** sono dotate di _program counter_ e _registri_, che contengono le informazioni relative ad ogni processo alle quali sono associate,.
 
-Lo processo è quindi rappresentato da:
+Un processo è quindi rappresentato da:
 - **Codice**: puntatore a un file che contiene il codice del processo
 - **Dati**: Dipendono dal programma. È quindi necessario che il codice eseguibile sia definito in modo tale da dare un idea chiara delle variabili e delle strutture dati necessarie al programa. Verosibilmente, anche in questo caso avremo un puntatore alla memoria principale, in quanto memorizzare tutti i dati in una struttura sarebbe estremamente difficile
 - **Program Counter**, **Registri** e **Stack**: per poter descrivere un processo sospeso/bloccato è necessario avrer memorizzato lo stato di quando era in _esecuzione_. Questi strumenti ci permettono di farlo.
-
-Un processo è quindi identificato anche dallo _stato_ che specifica cosa esso sta facendo in questo momento. Il fatto che possa essere bloccato o messo in attesa giustifica la necessità di memorizzare i campi del processo in un **descrittore**.
+- **Stato**: specifica cosa il processo sta facendo in un determinato momento. Il fatto che possa essere bloccato o messo in attesa giustifica la necessità di memorizzare i campi del processo in un **descrittore**.
 
 Ad un processo possono anche essere associate delle risorse:
 - **Memoria**: il programma potrebbe chiedere di descrivere delle strutture dati in memoria _heap_ attraverso delle `new`. È quindi importante mantenere anche un puntatore a questa memoria
@@ -133,21 +132,21 @@ Abbiamo già detto che ad ogni processo è associato un **descrittore di process
 I descrittori sono a loro volta organizzati in una tabella, chiamata **tabella dei processi**.
 
 All'interno di un descrittore di processo sono salvati i dati:
-- **Nome del processo**: nei sistemi `Unix` si utilizza un numero naturale, detto _Process ID_ (`pid`). Il numero di `bit` sul quale si codifica il `pid` determina il numero massimo di processi. Inoltre, vanno gestiti i `pid` dei processi termianti (vedremo che lo farà direttamente un meccanismo all'interno del _kernel_)
+- **Nome del processo**: nei sistemi `UNIX` si utilizza un numero naturale, detto _Process ID_ (`pid`). Il numero di `bit` sul quale si codifica il `pid` determina il numero massimo di processi. Inoltre, vanno gestiti i `pid` dei processi terminati (vedremo che lo farà direttamente un meccanismo all'interno del _kernel_)
 - **Stato del processo**
 - **Modalità di servizio dei processi**: ha un ruolo diverso a seconda del tipo di sistema operativo:
   - Nei sistemi _priority_ contiene l'importanza relativa del processo nei confronti degli altri
-  - Nei sistemi a _suffivisione del tempo_ contiene invece il quanto di tempo che la **CPU** può dedicare allo stesso
+  - Nei sistemi a _suddivisione del tempo_ contiene invece il quanto di tempo che la **CPU** può dedicare allo stesso
   - Nei sistemi _real-time_ contiene il tempo massimo entro il quale la richiesta deve essere soddisfatto
 - **Informazioni sulla gestione della memoria**: vedremo che qui saranno contenuti dei puntatori che permettono di mantenere le informazioni sugli indirizzi di memoria allocati
-- **Contesto del processo**: contiene le informaizoni relative ai registri della **CPU** utilizzati durante il cambio di contesto
-- **Utilizzo delle risposte**: in `Unix` ci sono dei puntatori a tabelle logiche del sistema (dispositivi I/O assegnati, file aperti, tempo di uso della **CPU**, ...)
+- **Contesto del processo**: contiene le informazioni relative ai registri della **CPU** utilizzati durante il cambio di contesto
+- **Utilizzo delle risorse**: in `UNIX` ci sono dei puntatori a tabelle logiche del sistema (dispositivi I/O assegnati, file aperti, tempo di uso della **CPU**, ...)
 - **Identificazione del processo successivo**: L'ultimo dato è necessario per poter correttamente implementare le code di processi.
 
 
 All'interno del sistema sono presenti tante code di processi, si dividono generalmente in due macrocategorie:
 - `coda pronti`: contiene i descrittori dei processi in attesa di andare in esecuzione.Vedremo come in alcuni casi potremmo anche averne più di una
-- `coda processi bloccati`:contiene i descrittori dei processi che attendono l'arrivo di una _interruzione esterna_ per poter tornare nello stato `pronti`
+- `coda processi bloccati`: contiene i descrittori dei processi che attendono l'arrivo di una _interruzione esterna_ per poter tornare nello stato `pronti`
 
 ## 2.4. Cambi di Contesti
 
@@ -203,9 +202,9 @@ Definiamo quindi i processi **interagenti**:
 
 In questo caso, la presenza di un altro processo può andare a modificare il risultato prodotto dal processo.
 
-I processi possono quindi interagire:
-- **Competizione**: se due processi vogliono utilizzare risorse comuni che non possono essere utilizzate ccontemporaneamente, generando problemi di **_mutua esclusione_**.
-  Questi problemi non sono risolti internamente al programma (dato che non sa nemmeno che esistano altri processi), ma vengono gestiti dal sistema operativo
+I processi possono quindi interagire per:
+- **Competizione**: se due processi vogliono utilizzare risorse comuni che non possono essere utilizzate contemporaneamente, generando problemi di **_mutua esclusione_**.
+  Questi problemi non sono risolti internamente al programma (dato che questo non sa nemmeno che esistano altri processi), ma vengono gestiti dal sistema operativo
 - **Cooperazione**: se due processsi vogliono eseguire un'attività comune mediante scambio di informazioni
 
 Il ruolo del _kernel_ è quello di realizzare l'astrazione di **CPU virtuale** fornendo la possibilità di:
@@ -271,7 +270,7 @@ Definendo come $\Delta_{B_i}$ i **CPU-Burst** e come $\Delta_{a_i}$ i **IO-Burst
 | **Tempo medio di completamento** (_turnaround time_) | $T_m = \sum{\Delta_{B_i}} + \sum{\Delta_{a_i}}$ | Il più piccolo possibile                   |
 | **Produttività** (_throughput rate_)                 | $\frac{1}{T_M}$                                 | Il più grande possibile                    |
 | **Tempo di Risposta**                                | $T_m = \sum{\Delta_{B_i}} + \sum{\Delta_{a_i}}$ | Minimizzato (coincide con il _turnaround_) |
-| **Tempo di Attesa**                                  | $A_m = \sum_i{t_{a_i}}$                         | Minimizzato                                |
+| **Tempo di Attesa**                                  | $A_m = \sum_i{\Delta_{a_i}}$                         | Minimizzato                                |
 | **Rispetto dei Vincoli Temporali**                   | -                                               | Soddisfatto                                |
 
 </div>
@@ -489,7 +488,7 @@ t_n &: \text{durata del CPU-Burst} \\
 s_n &: \text{la sua stima} \\
 a &: \text{fattore con } 0 \le a \le 1 \\
 s_{n+1} &: at_n + (1-a)s_n \\
-\end{align*}
+\end{align*}\;
 $$
 
 Al variare di $a$ abbiamo che:
@@ -802,12 +801,12 @@ Non possedendo risorse indipendenti (se non lo _stack_), i _thread_ possono esse
 A livello utente esistono delle librerie che permettono di strutturare un programma attraverso i _thread_ in esecuzione parallela, permettendo i passaggi tra _thread_ senza richiedere il supporto del sistema operativo.
 
 
-Nei sistemi `Unix` originali i programmi erano caratterizzati dal possedere un solo _thread_.
+Nei sistemi `UNIX` originali i programmi erano caratterizzati dal possedere un solo _thread_.
 
 Nei sistemi `Windows` e `Linux` moderni, il _kernel_ gestisce **_direttamente i thread_**, utilizzando al massimo le potenzialità di un sistema multiprocessore.
 
 
-# 5. Processi in Unix
+# 5. Processi in UNIX
 
 Il sistema `UNIX` suddivide le informaiozni tipicamente contenute nel `PCB` di un processo in due strutture dati distinte:
 - **Process Structure**: contiene informazioni indispensabili per la gestione di un processo, anche se _swapped_. (non soggetta a _swap-out_)

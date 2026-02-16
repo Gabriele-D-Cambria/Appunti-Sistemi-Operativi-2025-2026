@@ -74,7 +74,7 @@ Ci sono diverse ragioni per le quali riserviamo questi _buffer_, prima fra tutte
 <img class="100" src="./images/Gestione Periferiche/double-buffer-example.png">
 <figcaption>
 
-La presenzza di più buffer permette di avere trasferimenti più efficienti, mantenendo la trasparenza.
+La presenza di più buffer permette di avere trasferimenti più efficienti, mantenendo la trasparenza.
 </figcaption>
 </figure>
 
@@ -183,7 +183,7 @@ for (int i = 0; i < n; ++i) {
 ```
 
 Poiché adesso il processo si sospende, non siamo più in grado di controllare direttamente la disponibilità del dato nel registro del controllore.
-Dovrà quindi essere il controllore stesso a segnalarci l'evento, risvegliando il processo applicativo attraverso una funzione specifica.
+Dovrà quindi essere il controllore stesso a segnalarci l'evento, risvegliando il processo applicativo attraverso una funzione specifica, l'_interrupt handler_ (`inth`).
 
 <div class="grid2">
 <div class="">
@@ -197,7 +197,7 @@ Indichiamo:
 
 - `inth`: funzione di risposta alle interruzioni del dispositivo che si occuperà di effettuare le `signal`
 
-- `Q`: generico processo applicativo schefulato quando `PI` si sospende sul semaforo.
+- `Q`: generico processo applicativo schedulato quando `PI` si sospende sul semaforo.
 
 All'istante `ea1`, `PI` si blocca sul semaforo dopo aver eseguito il primo ciclo.
 Il processo subisce un cambio di contesto schedulando un altro processo generico `Q` mentre il parallelo all'attività della **CPU** inizia l'attività del dispositivo `PE`.
@@ -270,7 +270,7 @@ La funzione di lettura:
 * @return il numero di dati letti, -1 in caso di terminazione erronea
 */
 int read(int disp, char* pbuf, int cont) {
-	// descrtittore è la lista dei descrittori indicizzati tramite il numero dispositivo
+	// descrittore è la lista dei descrittori indicizzati tramite il numero dispositivo
 	descrittore[disp].contatore = cont;
 	descrittore[disp].puntatore = pbuf;
 
@@ -310,13 +310,14 @@ void inth() {
 		*(descrittore[disp]).puntatore = b;
 		++(descrittore[disp].puntatore);
 		--(descrittore[disp].contatore);
+
 		if (descrittore[disp].contatore != 0) {
 			<riattivo il dispositivo>
 		}
 		else {
 			descrittore[disp].esito = CORRECT_TERMINATION;
 			<disattivo il dispositivo>
-			
+
 			// riattivo il processo applicativo
 			descrittore[disp].dato_disponibile.signal();
 		}
@@ -327,9 +328,8 @@ void inth() {
 
 		if (<errore non recuperabile>) {
 			descrittore[disp].esito = <codice errore>;
+			descrittore[disp].dato_disponibile.signal();
 		}
-
-		descrittore[disp].dato_disponibile.signal();
 	}
 
 	return;

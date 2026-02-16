@@ -15,7 +15,7 @@ title: Utenti e Gruppi
 
 # 2. Utenti e Gruppi
 
-All'interno dei sistemi `Unix` ogni utente è definito da `username` e da `UID` (_User ID_). Un gruppo, analogamente, è definito da `groupname` e da `GID` (_Group ID_).
+All'interno dei sistemi `UNIX` ogni utente è definito da `username` e da `UID` (_User ID_). Un gruppo, analogamente, è definito da `groupname` e da `GID` (_Group ID_).
 
 Ogni utente **_deve appartenere almeno ad un gruppo_**, detto _primary group_.
 

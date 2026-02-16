@@ -203,9 +203,9 @@ Nell'istante `e` dell'immagine sulla destra, il processo $P_1$ viene rimosso dal
 Nell'istante `f` viene allocato $P_4$ con dimensioni più piccole di $P_1$, andando a generare una nuova partizione $D_6 = D_5 - N_4$.
 Nell'istante `g` si libera $P_2$ generando $D_7 = D_6 + N_2$.
 
-Se immaginiamo che in un istante `h` arrivi un nuovo processo $P_5$ con dimensione $N_5 \in \bigl[\max(D_4, D_7), D_4 + D_7\bigr)$, accade che **abbiamo complessivamente sufficiente memoria**, ma questa **_non è contigua_**, impossibilitandoci ad inserirla nel momento nel quae si genera.
+Se immaginiamo che in un istante `h` arrivi un nuovo processo $P_5$ con dimensione $N_5 \in \bigl[\max(D_4, D_7), D_4 + D_7\bigr)$, accade che **abbiamo complessivamente sufficiente memoria**, ma questa **_non è contigua_**, impossibilitandoci ad inserirla nel momento nel quale si genera.
 
-Dovremo attendere che un altro dei processi che si trova attualemnte in memoria termini o venga sostituito, dato che essendo **a rilocazione statica** non possiamo effettuare rilocazione.
+Dovremo attendere che un altro dei processi che si trova attualmente in memoria termini o venga sostituito, dato che essendo **a rilocazione statica** non possiamo effettuare rilocazione.
 
 </div>
 <div class="">
@@ -289,7 +289,7 @@ Qual'ora il valore del segmento `sg` fosse già presente in uno dei registri, no
 
 Questa maggiore complicazione del meccanismo di traduzione, trova la sua giustificazione nei vantaggi che che la segmentazione offre.
 
-Per quanto riguarda la **protezione**, la segmentazione consente di effettuare **_tre diversi controlli nel momento in cui viene fatto 'accesso ad una locazione di memoria_**:
+Per quanto riguarda la **protezione**, la segmentazione consente di effettuare **_tre diversi controlli nel momento in cui viene fatto l'accesso ad una locazione di memoria_**:
 1. Segmento non esistente
 2. Offset fuori dalla dimensione del segmento
 3. Associazione di **_specifici diritti di accesso_** ad ogni segmento, in modo che ogni riferimento a quel segmento sia consistente a tali diritti.
@@ -378,7 +378,7 @@ La dimensione di questa tabella dipende dal numero di pagine che compongono lo s
 Supponendo che una pagina contenga `1024` locazioni e lo spazio virtuale di un programma di medie dimensioni sia composto da `256` pagine, la tabella delle pagine dovrà poter contenere almeno 256 elementi.
 
 Queste tabelle non sono allocate nei rigistri della `MMU`, ma nella memora fisica. È tuttavia necessario che la `MMU` abbia un particolare registro interno che contenga l'indirizzo della tabella delle pagine del processo in esecizione.
-Possiamo chiamarlo, come nell'immagine, `RPTP` (_Registro Puntatore alla Tabella delle Pagine_). 
+Possiamo chiamarlo `PTPR` (_Page Table Pointer Register_) o, come nell'immagine, `RPTP` (_Registro Puntatore alla Tabella delle Pagine_). 
 
 Anche in questo caso è utile implementare il `TLB` per evitare accessi in memoria multipli.
 </div>
@@ -450,9 +450,9 @@ Nel corso delle varie esecuzione, questo set aumenterà lentamente (per via dei 
 Esistono diversi tipi di algoritmo di rimpiazzamento:
 - **Ottimo**: rimpiazza le pagine che non verranno più riferite o che verranno utilizzate più nel futuro rispetto alle altre. (Teorico e irrealizzabile)
 - **FIFO**: rimpiazza la pagina **_locale_** (aka del processo in esecuzione) che è _da più tempo in memoria_. Il rimpiazzamento è locale per evitare di propagare in futuro l'errore anche ad altri processi.
-- **LRU**: rimpiazza la pagina non utilizzata da più tempo. È più efficiente rispetto al **FIFO**, ma anche più difficile da realizzare. Infatti è necessario modificare opportunamente la tabella delle pagine per introdurre un campo dove salvare un _timestamp_ , ed è necessario consultarli tutti per recuperare il più vecchio e aggiornare i nuovi. Tra gli arlgoritmi implementabili è quello che riduce al minimo il **_trashing_**, ovvero diminuisce al minimo il `page-fault`.
+- **LRU**: rimpiazza la pagina non utilizzata da più tempo. È più efficiente rispetto al **FIFO**, ma anche più difficile da realizzare. Infatti è necessario modificare opportunamente la tabella delle pagine per introdurre un campo dove salvare un _timestamp_ , ed è necessario consultarli tutti per recuperare il più vecchio e aggiornare i nuovi. Tra gli algoritmi implementabili è quello che riduce al minimo il **_trashing_**, ovvero diminuisce al minimo il `page-fault`.
 
-L'algoritmo utilizzato da `UNIX` è un'approssimazoine dell'algoritmo `LRU`, noto come **_second-chance_** o **_clock algorithm_**-
+L'algoritmo utilizzato da `UNIX` è un'approssimazoine dell'algoritmo `LRU`, noto come **_second-chance_** o **_clock algorithm_**.
 
 <div class="grid2">
 <div class="">

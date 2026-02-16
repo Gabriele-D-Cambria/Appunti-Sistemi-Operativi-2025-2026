@@ -317,7 +317,7 @@ Ciò aumenta ad uno la tolleranza ad errore.
 Alcuni sistemi operativi, ad esempio `Windows`, affronato il problema affiancando ad una allocazione basata su una _linked-list_ una struttura dati nella quale viene descritta la **mappa di allocazione di tutti i blocchi**, detta **_File Allocation Table_** `FAT`.
 Questa tabella viene memorizzata in una posizione predefinita della memoria, così da essere reperibile in qualsiasi momento.
 
-Essa contiene tanti elementi quanti sono i blocchi del dispositivo, ed in ogniune è presente un valore che indica:
+Essa contiene tanti elementi quanti sono i blocchi del dispositivo, ed in ogniuno è presente un valore che indica:
 - Se il blocco è libero
 - L'indice dell'elemento della tabella che rappresenta il blocco successivo nella lista
 
@@ -449,7 +449,7 @@ A livello globale il _kernel_ mantiene una **_Tabella dei File Aperti del Sistem
 
 <img class="" src="./images/File System/kernel-data-structure-for-file-access.png">
 
-Più precisamento viene allocato un elemento nella `TFAS` per ogni **operaizone di apertura di file**. Ciò implica che se due processi distinti aprono lo stesso file, avremo **_due elementi distinti nella `TFAS`_**, ma comunque uno solo nella _tabella dei file attivi_.
+Più precisamento viene allocato un elemento nella `TFAS` per ogni **operazione di apertura di file**. Ciò implica che se due processi distinti aprono lo stesso file, avremo **_due elementi distinti nella `TFAS`_**, ma comunque uno solo nella _tabella dei file attivi_.
 Se invece un processo genera dei figli (ad esempio con una `fork()`) questi **_condivideranno con il padre i vari file descriptor_** e di conseguenza anche gli `I/O Pointer`.
 
 <img class="" src="./images/File System/father-son-pointer-sharing.png">
