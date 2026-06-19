@@ -150,7 +150,7 @@ All'interno del sistema sono presenti tante code di processi, si dividono genera
 
 ## 2.4. Cambi di Contesti
 
-L'utilizzo della **CPU** viene commutato da un processo all'altro. Ogni volta che si effetta questa commutazione hanno luogo una serie di azioni
+L'utilizzo della **CPU** viene commutato da un processo all'altro. Ogni volta che si effettua questa commutazione hanno luogo una serie di azioni
 1. **Salvataggio stato**: si salva il contesto del processo in `esecuzione` nel suo descrittore
 2. Inserimento del descrittore nella coda adeguata (`bloccati`, `pronti`, ...)
 3. **Short term scheduling**: Lo _scheduler_ seleziona un altro processo dalla coda dei processi `pronti` e si carica il suo `pid` nel registro che identifica il _processo in esecuzione_.
@@ -193,7 +193,7 @@ Due processi si dicono **concorrenti** se le loro esecuzioni si _sovrappongono n
 > Se la prima operazione di un processo avviene prima che termini l'ultima operazione dell'altro, generando fenomeni di _interleaving_ (1 processore) o _overlapping_ (più processori).
 
 Possiamo definire anche i processi **indipendenti**:
-> Se il risultato prodotto dall'esecuzione di uno **non è influenzato** da quella di dell'altro, e viceversa.
+> Se il risultato prodotto dall'esecuzione di uno **non è influenzato** da quello dell'altro, e viceversa.
 
 Non consideriamo nella relazione di _indipendenza_ l'influenza temporale, che è innegabile e non trascurabile, ma ci limitiamo a considerare solamente l'influenza logica, chiamando la relazione **proprietà della riproducibilità**.
 
