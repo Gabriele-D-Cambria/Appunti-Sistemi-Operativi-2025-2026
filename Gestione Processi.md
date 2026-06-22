@@ -220,7 +220,7 @@ Vi possono essere tre diverse attività di _scheduling_:
   Interviene quando il processo in esecuzione perde il controllo della **CPU**, e può essere di due tipi:
 	- Non _preemptive scheduling_ (senza diritto di revoca): il sistema operativo non può revocare la **CPU**, ma deve essere lui a rilasciarla
 	- _Preemptive scheduling_ (con diritto di revoca): il sistema operativo può forzare la revoca della **CPU** ad un processo in base a determiate variabili. (quanti di tempo, priorità, ...)
-- **A medio termine**: Si riferisce principalmente allo **_swapping_**, che permette di utilizzare la memrooia secondaria per trasferire temporaneamente i processi qualora la memoria principale non sia sufficiente per soddisfare le richieste di tutti i processi nel sistema
+- **A medio termine**: Si riferisce principalmente allo **_swapping_**, che permette di utilizzare la memoria secondaria per trasferire temporaneamente i processi qualora la memoria principale non sia sufficiente per soddisfare le richieste di tutti i processi nel sistema
 - **A lungo termine**: si occupa di scegliere quali programmi caricare in memoria centrale dalla memoria secondaria. Controlla quindi il _grado di multiprogrammazione_, ovvero quanti processi possono essere attivi contemporaneamente.
 
 Lo scheduling di breve termine è invocato molto spesso (nell'ordine dei millisecondi), perciò deve essere **molto veloce**. Quello di lungo termine invece viene invocato nell'ordine di secondi se non minuti, perciò può essere meno efficiente.
