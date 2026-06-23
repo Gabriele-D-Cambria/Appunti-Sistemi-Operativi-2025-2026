@@ -37,7 +37,7 @@ Abbiamo visto quindi che abbiamo un sistema a processi paralleli.
 
 Questi processi possono interagire in tre modi:
 - **Sincronizzazione Diretta o Esplicita** (_Cooperazione_): quando due processi lavorano insieme per il raggiungimento di uno scopo comune
-- **Sincronizzazione Indiretta o Implicita** (_Competizione_): quando due processi vogliono accedere alla stessa risorsa per scopi indipendenti. Questi problemi di dicono "impliciti" perché non sono scritte esplicitamente in nessun programma, ma avvengono per via della gestione delle risorse
+- **Sincronizzazione Indiretta o Implicita** (_Competizione_): quando due processi vogliono accedere alla stessa risorsa per scopi indipendenti. Questi problemi si dicono "impliciti" perché non sono scritte esplicitamente in nessun programma, ma avvengono per via della gestione delle risorse
 - **Time-Dependent error** (_Interferenza_): quando l'esecuzione di un insieme di processi ne modifica i dati in maniera arbitraria producendo errori
 
 Per lo studio della sincronizzazione faremo riferimento a due modelli:
