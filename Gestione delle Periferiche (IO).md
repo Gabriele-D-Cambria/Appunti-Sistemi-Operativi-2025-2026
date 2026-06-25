@@ -441,8 +441,10 @@ Alcuni parametri che è possibile calcolare sono:
 
 Le relazioni che mette in relazione questi parametri sono le seguenti:
 $$
+\begin{matrix}
 	TF = TA + TT \\
 	TA = ST + RT
+\end{matrix}
 $$
 
 Per i dischi presenti sopra possiamo calcolare:

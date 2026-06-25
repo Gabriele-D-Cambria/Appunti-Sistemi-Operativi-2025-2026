@@ -61,7 +61,7 @@ I processi hanno solo spazio di indirizzamento privato.
 
 Tuttavia, è possibile accedere a porzioni private di memoria di altri processi attraverso **_scambio di messaggi_**. In questo modo i ci si deve adoperare per richiedere, copiare e inviare le porzioni di memoria desiderate.
 
-L'accesso alle strutture nei messaggi deve quindi essere protetto sia da **_mutua esclusione_** che da **_sincronizzazione_**.
+L'accesso alle strutture è naturalmente protetto sia da **_mutua esclusione_** che da **_sincronizzazione_**.
 
 </div>
 </div>
@@ -164,7 +164,7 @@ Lo strumento più elementare è quello basato su due primitive:
 	Questo tipo di `send` mette il processo mittente in attesa fin quando il servizio richiesto non è terminato e il risultato ricevuto.
 - `receive(src, message)`: permette di ricevere un messaggio. È possibile specificare una determinata origine, ma non è obbligatorio. Può essere implementana in due modi:
   - **Asincrona**: consente la prosecuzione dell'esecuzione del processo anche in assenza di messaggi
-  - **Sincrona**: provoca la sospensione del processo che la esegue nel caso non ci fossero messaggi in attesa di essere serviti. All'arrivo del primo pessaggio il processo viene risvegliato
+  - **Sincrona**: provoca la sospensione del processo che la esegue nel caso non ci fossero messaggi in attesa di essere serviti. All'arrivo del primo messaggio il processo viene risvegliato
 
 Un messaggio ha tipicamente il seguente formato:
 
